@@ -1,0 +1,1 @@
+This is a clone site .. idea from NoteBookLM and code and design by us.. Not copy from youtube or any site.
