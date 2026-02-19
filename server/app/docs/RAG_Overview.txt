@@ -1,0 +1,18 @@
+RAG (Retrieval-Augmented Generation)
+
+RAG is an AI architecture that combines information retrieval with text
+generation.
+
+Workflow: 1. User sends a query. 2. System converts query into
+embeddings. 3. Vector database searches for relevant documents. 4.
+Retrieved documents are added as context. 5. LLM generates a final
+answer based on context + query.
+
+Main Components: - Embedding Model - Vector Database (e.g., FAISS,
+Pinecone, Chroma) - Large Language Model (LLM)
+
+Use Cases: - Chatbots with custom knowledge - Document Q&A systems -
+Enterprise knowledge assistants - Research tools
+
+Benefits: - Reduces hallucination - Uses up-to-date external knowledge -
+Scalable for large document collections
