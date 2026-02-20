@@ -39,7 +39,7 @@ class JinaEmbeddings(Embeddings):
     
 
 
-def load_documents(docs_path: str):
+def load_documents(docs_path):
 
     print(f'Loading documents from {docs_path}...')
 
@@ -99,6 +99,9 @@ def create_vector_store(chunks, persist_directory='db/chroma_db'):
 
     jina_api_key = os.getenv("JINA_API_KEY")
 
+    if not jina_api_key:
+        raise ValueError("JINA_API_KEY not found in environment variables. Please set it in your .env file.")
+
     embeddings = JinaEmbeddings(
         api_key=jina_api_key,
         model="jina-embeddings-v4"
@@ -111,11 +114,15 @@ def create_vector_store(chunks, persist_directory='db/chroma_db'):
         collection_metadata={"hnsw:space": "cosine"}
     )
 
+    vector_store.persist() 
+
+    print("embeddings created and vector store initialized")
+
     return vector_store
 
 
 def main():
-    docs_path = 'docs'
+    docs_path = '../docs'
     db_path = 'db/chroma_db'
 
     print("Starting ingestion process...")
