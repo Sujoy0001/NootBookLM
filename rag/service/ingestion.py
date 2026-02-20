@@ -123,7 +123,7 @@ def create_vector_store(chunks, persist_directory='db/chroma_db'):
 
 def main():
     docs_path = '../docs'
-    db_path = 'db/chroma_db'
+    db_path = '../db/chroma_db'
 
     print("Starting ingestion process...")
 
