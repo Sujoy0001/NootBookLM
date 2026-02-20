@@ -70,7 +70,7 @@ def load_documents(docs_path):
 
 
 
-def split_documents(documents, chunk_size=1000, chunk_overlap=0):
+def split_documents(documents, chunk_size=300, chunk_overlap=0):
     text_splitter = CharacterTextSplitter(
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap
@@ -80,7 +80,7 @@ def split_documents(documents, chunk_size=1000, chunk_overlap=0):
 
     if chunks:
 
-        for i, chunk in enumerate(chunks[:5]):
+        for i, chunk in enumerate(chunks):
             print(f"\n--- Chunk {i+1} ---")
             print(f"Source: {chunk.metadata['source']}")
             print(f"Length: {len(chunk.page_content)} characters")
@@ -93,7 +93,7 @@ def split_documents(documents, chunk_size=1000, chunk_overlap=0):
 
     return chunks
 
-def create_vector_store(chunks, persist_directory='db/chroma_db'):
+def create_vector_store(chunks, persist_directory):
 
     print(f'Creating vector store in {persist_directory}...')
 
@@ -114,7 +114,6 @@ def create_vector_store(chunks, persist_directory='db/chroma_db'):
         collection_metadata={"hnsw:space": "cosine"}
     )
 
-    vector_store.persist() 
 
     print("embeddings created and vector store initialized")
 
