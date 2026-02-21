@@ -5,91 +5,76 @@ import os
 import requests
 
 from ingestion import JinaEmbeddings
-from langchain_core.messages import HumanMessage, SystemMessage
 
-from google import genai
-
+# --- NEW IMPORTS FOR THE LLM PIPELINE ---
 from langchain_google_genai import ChatGoogleGenerativeAI
-
-from groq import Groq
-
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
-from langchain_groq import ChatGroq
-from langchain_core.prompts import ChatPromptTemplate
-
 
 load_dotenv()
 
 persistent_directory = '../db/chroma_db'
-
 jina_api_key = os.getenv("JINA_API_KEY")
 
-    
+# LangChain's Gemini integration looks for the "GOOGLE_API_KEY" environment variable.
+# Assuming you saved your key as GEMINI_API_KEY in your .env file, we map it here:
+os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI_API_KEY") 
+
 embeddings = JinaEmbeddings(
-                api_key=jina_api_key,
-                model="jina-embeddings-v4"
-            )
+    api_key=jina_api_key,
+    model="jina-embeddings-v4"
+)
 
 db = Chroma(
-        persist_directory=persistent_directory,
-        embedding_function=embeddings,
-        collection_metadata={"hnsw:space": "cosine"}
-    )
+    persist_directory=persistent_directory,
+    embedding_function=embeddings,
+    collection_metadata={"hnsw:space": "cosine"}
+)
 
-query = "What is RAG?"
+query = "capital of india?"
 
+# Your existing retriever
 retriever = db.as_retriever(search_kwargs={"k": 3})
 
-results = retriever.invoke(query)
+# --- ADDING THE LLM AND CHAIN ---
 
-print(f"user query: {query}\n")
+# 1. Initialize the free-tier Gemini model
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.3)
 
-for i, result in enumerate(results,  1):
-    print(f"Result {i}: {result.page_content}\n")
-
-
-context_text = "\n\n".join(
-    [f"[Result {i+1}]\n{doc.page_content}" for i, doc in enumerate(results)]
-)
-
-combined_context = f"""
-Answer the question using ONLY the information provided below.
-If the answer is not contained in the context, say "Insufficient information."
-
-Context:
-{context_text}
-
-Question:
-{query}
-"""
-
-llm = ChatGroq(
-    model="llama3-8b-8192",
-    groq_api_key=os.getenv("GROQ_API_KEY"),
-    temperature=0.2
-)
-
-formatted_context = "\n\n".join(doc.page_content for doc in results)
-
-prompt = ChatPromptTemplate.from_template(
-    """Answer the question using ONLY the information provided below.
-If the answer is not contained in the context, say "Insufficient information."
+# 2. Define the Prompt Template
+template = """
+You are a helpful AI assistant. Use the following pieces of retrieved context to answer the user's question.
+If the answer is not in the context, just say that you don't know. Do not make up an answer.
 
 Context:
 {context}
 
 Question:
-{question}"""
+{question}
+
+Answer:
+"""
+prompt = PromptTemplate.from_template(template)
+
+# 3. Create a helper function to format the retrieved documents into plain text
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
+
+# 4. Build the RAG Chain
+# This automatically passes the query to the retriever, formats the docs, injects the prompt, and calls Gemini.
+rag_chain = (
+    {"context": retriever | format_docs, "question": RunnablePassthrough()}
+    | prompt
+    | llm
+    | StrOutputParser()
 )
 
-messages = prompt.format_messages(
-    context=formatted_context,
-    question=query
-)
+# 5. Execute the pipeline
+print(f"User query: {query}\n")
+print("Searching database and generating answer...\n")
 
-result = llm.invoke(messages)
+# Invoke the chain instead of just the retriever
+response = rag_chain.invoke(query)
 
-print("Generated answer:")
-print(result.content)
+print(f"Final Answer:\n{response}")
