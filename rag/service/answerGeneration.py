@@ -32,7 +32,7 @@ db = Chroma(
     collection_metadata={"hnsw:space": "cosine"}
 )
 
-query = "capital of india?"
+query = "recipe of butter chicken"
 
 # Your existing retriever
 retriever = db.as_retriever(search_kwargs={"k": 3})
