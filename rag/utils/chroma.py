@@ -1,28 +1,37 @@
 import chromadb
-from chromadb.api import ClientAPI
-from chromadb.api.models.Collection import Collection
-from fastapi import Depends
-from dotenv import load_dotenv
-import os
+from chromadb.config import Settings
 
+import os
+from dotenv import load_dotenv
 
 load_dotenv()
 
-_clinet: ClientAPI | None = None
-_collection: Collection | None = None
+CHROMA_API_KEY = os.getenv("CHROMA_API_KEY")
+CHROMA_TENANT = os.getenv("CHROMA_TENANT")
+CHROMA_DATABASE = os.getenv("CHROMA_DATABASE")
 
-def get_chroma_client() -> ClientAPI:
-    global _clinet
-    if _clinet is None:
-        _clinet = chromadb.CloudClient(
-            api_key=os.getenv("JINA_API_KEY"),
-            endpoint=os.getenv("CHROMA_ENDPOINT"),
-            database=os.getenv("CHROMA_DATABASE")
-        )
-    return _clinet
+client = chromadb.HttpClient(
+    host="https://api.chroma.com",
+    ssl=True,
+    headers={
+        "Authorization": f"Bearer {CHROMA_API_KEY}",
+        "X-Chroma-Tenant": CHROMA_TENANT,
+        "X-Chroma-Database": CHROMA_DATABASE
+    }
+)
 
-def get_chroma_collection(client: ClientAPI = Depends(get_chroma_client)) -> Collection:
-    global _collection
-    if _collection is None:
-        _collection = client.get_collection(name=os.getenv("CHROMA_COLLECTION"))
-    return _collection
+collection = client.get_or_create_collection(
+    name="rag_documents",
+    metadata={"hnsw:space": "cosine"}
+)
+
+collection.add(
+    ids=["chunk_1"],
+    embeddings=[embedding_vector],  # list of floats
+    documents=["This is the chunk text"],
+    metadatas=[{
+        "user_id": "user_42",
+        "file_name": "rag.pdf",
+        "chunk_index": 1
+    }]
+)
