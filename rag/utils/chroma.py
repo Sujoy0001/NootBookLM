@@ -1,37 +1,43 @@
 import chromadb
-from chromadb.config import Settings
-
 import os
+from langchain_core.embeddings import Embeddings
 from dotenv import load_dotenv
+from utils.jina import JinaEmbeddings
 
 load_dotenv()
 
-CHROMA_API_KEY = os.getenv("CHROMA_API_KEY")
-CHROMA_TENANT = os.getenv("CHROMA_TENANT")
-CHROMA_DATABASE = os.getenv("CHROMA_DATABASE")
+def create_vector_store(user_id: str, chunks):
 
-client = chromadb.HttpClient(
-    host="https://api.chroma.com",
-    ssl=True,
-    headers={
-        "Authorization": f"Bearer {CHROMA_API_KEY}",
-        "X-Chroma-Tenant": CHROMA_TENANT,
-        "X-Chroma-Database": CHROMA_DATABASE
-    }
-)
+    client = chromadb.CloudClient(
+        api_key=os.getenv("CHROMA_API_KEY"),
+        tenant=os.getenv("CHROMA_TENANT"),
+        database=os.getenv("CHROMA_DATABASE")
+    )
 
-collection = client.get_or_create_collection(
-    name="rag_documents",
-    metadata={"hnsw:space": "cosine"}
-)
+    collection = client.get_or_create_collection(
+        name=f"rag_{user_id}",  
+        metadata={"hnsw:space": "cosine"}
+    )
 
-collection.add(
-    ids=["chunk_1"],
-    embeddings=[embedding_vector],  # list of floats
-    documents=["This is the chunk text"],
-    metadatas=[{
-        "user_id": "user_42",
-        "file_name": "rag.pdf",
-        "chunk_index": 1
-    }]
-)
+    jina_api_key = os.getenv("JINA_API_KEY")
+
+    embeddings = JinaEmbeddings(
+        api_key=jina_api_key,
+        model="jina-embeddings-v4"
+    )
+
+    texts = [chunk.page_content for chunk in chunks]
+    metadatas = [chunk.metadata for chunk in chunks]
+
+    ids = [f"{user_id}_chunk_{i}" for i in range(len(chunks))]
+
+    vectors = embeddings.embed_documents(texts)
+
+    collection.add(
+        ids=ids,
+        embeddings=vectors,
+        documents=texts,
+        metadatas=metadatas
+    )
+
+    return collection
