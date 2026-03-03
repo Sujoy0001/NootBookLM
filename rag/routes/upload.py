@@ -112,7 +112,7 @@ async def upload_document(file: UploadFile = File(...), user_id: str = "anonymou
         "file_type": extension,
         "size_bytes": total_bytes,
         "characters_extracted": len(text),
-        "preview": text[:500],
+        "preview": text,
     }
 
     result = await docs_collection.update_one(

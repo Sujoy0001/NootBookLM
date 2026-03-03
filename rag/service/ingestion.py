@@ -1,5 +1,5 @@
 from langchain_core.documents import Document as LangDocument
-from langchain_text_splitters import CharacterTextSplitter
+from langchain_text_splitters import CharacterTextSplitter, RecursiveCharacterTextSplitter
 from database.mongodb import docs_collection
 import requests
 
@@ -27,12 +27,12 @@ async def load_user_documents(user_id: str):
     return documents
 
 
-
 def split_documents(documents, chunk_size=500, chunk_overlap=100):
 
-    splitter = CharacterTextSplitter(
+    splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
-        chunk_overlap=chunk_overlap
+        chunk_overlap=chunk_overlap,
+        separators=["\n\n", "\n", ".", " ", ""]
     )
 
     return splitter.split_documents(documents)

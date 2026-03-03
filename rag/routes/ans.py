@@ -13,8 +13,6 @@ async def ask_question(payload: Query):
         )
 
         return {
-            "user_id": payload.user_id,
-            "query": payload.query,
             "answer": answer
         }
 
