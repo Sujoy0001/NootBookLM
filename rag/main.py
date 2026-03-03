@@ -1,7 +1,16 @@
 from fastapi import FastAPI
-from routes import upload, rag
+from routes import upload, rag, ans
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Rag server", description="A FastAPI server for Rag integration", version="1.0.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 async def root():
@@ -10,3 +19,5 @@ async def root():
 app.include_router(upload.router, prefix="/api", tags=["Document Upload"])
 
 app.include_router(rag.router, prefix="/api", tags=["RAG"])
+
+app.include_router(ans.router, prefix="/api", tags=["Answer Generation"])

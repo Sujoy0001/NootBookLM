@@ -1,80 +1,109 @@
-from langchain_chroma import Chroma
-from langchain_core.embeddings import Embeddings
-from dotenv import load_dotenv
 import os
-import requests
+from dotenv import load_dotenv
+from datetime import datetime
 
-from ingestion import JinaEmbeddings
-
-# --- NEW IMPORTS FOR THE LLM PIPELINE ---
+from langchain_chroma import Chroma
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
-from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
+
+from utils.jina import JinaEmbeddings
+from database.mongodb import chat_collection
 
 load_dotenv()
 
-persistent_directory = '../db/chroma_db'
-jina_api_key = os.getenv("JINA_API_KEY")
+os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI_API_KEY")
 
-# LangChain's Gemini integration looks for the "GOOGLE_API_KEY" environment variable.
-# Assuming you saved your key as GEMINI_API_KEY in your .env file, we map it here:
-os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI_API_KEY") 
+CHROMA_TENANT = os.getenv("CHROMA_TENANT")
+CHROMA_DATABASE = os.getenv("CHROMA_DATABASE")
+CHROMA_API_KEY = os.getenv("CHROMA_API_KEY")
+
 
 embeddings = JinaEmbeddings(
-    api_key=jina_api_key,
+    api_key=os.getenv("JINA_API_KEY"),
     model="jina-embeddings-v4"
 )
 
-db = Chroma(
-    persist_directory=persistent_directory,
-    embedding_function=embeddings,
-    collection_metadata={"hnsw:space": "cosine"}
+
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    temperature=0.3
 )
 
-query = "recipe of butter chicken"
 
-# Your existing retriever
-retriever = db.as_retriever(search_kwargs={"k": 3})
-
-# --- ADDING THE LLM AND CHAIN ---
-
-# 1. Initialize the free-tier Gemini model
-llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.3)
-
-# 2. Define the Prompt Template
 template = """
-You are a helpful AI assistant. Use the following pieces of retrieved context to answer the user's question.
-If the answer is not in the context, just say that you don't know. Do not make up an answer.
+    You are an expert AI assistant.
 
-Context:
-{context}
+    You must answer the user's question using ONLY the provided context.
+    Do NOT use prior knowledge.
+    Do NOT make assumptions.
+    Do NOT hallucinate.
 
-Question:
-{question}
+    If the answer cannot be found explicitly in the context, respond with:
+    "I don't know based on the provided context."
 
-Answer:
+    ---------------------
+    CONTEXT:
+    {context}
+    ---------------------
+
+    USER QUESTION:
+    {question}
+
+    INSTRUCTIONS:
+    - Provide a clear and concise answer.
+    - Base every statement strictly on the context.
+    - If multiple pieces of context are relevant, combine them logically.
+    - Do not mention the word "context" in your answer.
+    - Do not explain your reasoning.
+    - Return only the final answer.
+
+    ANSWER:
 """
-prompt = PromptTemplate.from_template(template)
 
-# 3. Create a helper function to format the retrieved documents into plain text
+prompt = PromptTemplate.from_template(template)
+parser = StrOutputParser()
+
+
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
-# 4. Build the RAG Chain
-# This automatically passes the query to the retriever, formats the docs, injects the prompt, and calls Gemini.
-rag_chain = (
-    {"context": retriever | format_docs, "question": RunnablePassthrough()}
-    | prompt
-    | llm
-    | StrOutputParser()
-)
 
-# 5. Execute the pipeline
-print(f"User query: {query}\n")
-print("Searching database and generating answer...\n")
 
-# Invoke the chain instead of just the retriever
-response = rag_chain.invoke(query)
+def get_user_vectorstore(user_id: str):
+    """
+    Create Chroma Cloud instance for specific user collection
+    """
+    collection_name = f"rag_{user_id}"
 
-print(f"Final Answer:\n{response}")
+    return Chroma(
+        collection_name=collection_name,
+        embedding_function=embeddings,
+        tenant=CHROMA_TENANT,
+        database=CHROMA_DATABASE,
+        chroma_cloud_api_key=CHROMA_API_KEY
+    )
+
+
+async def generate_answer(user_id: str, query: str):
+
+
+    db = get_user_vectorstore(user_id)
+
+    retriever = db.as_retriever(search_kwargs={"k": 3})
+
+    docs = retriever.invoke(query)
+    context = format_docs(docs)
+
+
+    final_prompt = prompt.invoke({
+        "context": context,
+        "question": query
+    })
+
+
+    response = await llm.ainvoke(final_prompt)
+    answer = parser.invoke(response)
+
+
+    return answer
