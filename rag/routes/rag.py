@@ -1,18 +1,31 @@
 from fastapi import APIRouter, HTTPException
 from service.ingestion import load_user_documents, split_documents
 from utils.chroma import create_vector_store
-import requests
+from database.mongodb import docs_collection
 
 router = APIRouter()
+
+async def fetch_document_from_mongo(user_id: str, filename: str):
+
+    user_data = await docs_collection.find_one({"user_id": user_id})
+
+    if not user_data or "documents" not in user_data:
+        raise Exception("No documents found for this user")
+    
+
+    for doc in user_data["documents"]:
+        if doc.get("filename") == filename:
+            return doc
+        
+    raise Exception("Document not found for this user")
+
 
 @router.post("/rag/ingest")
 async def ingest_user_documents(user_id: str):
 
     try:
-        # 1️⃣ Load from Mongo
         documents = await load_user_documents(user_id)
 
-        # 2️⃣ Chunk
         chunks = split_documents(documents)
 
         # 3️⃣ Embed + Upload

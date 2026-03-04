@@ -124,5 +124,10 @@ async def upload_document(file: UploadFile = File(...), user_id: str = "anonymou
     )
 
     return {
-        "message": "Document uploaded and stored successfully"
+        "message": "File uploaded and processed successfully",
+        "file_info": {
+            "filename": original_name,
+            "size_bytes": total_bytes,
+            "characters_extracted": len(text),
+        },
     }
