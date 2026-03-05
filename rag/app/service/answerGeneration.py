@@ -12,8 +12,6 @@ from ..utils.jina import JinaEmbeddings
 
 load_dotenv()
 
-os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI_API_KEY")
-
 CHROMA_TENANT = os.getenv("CHROMA_TENANT")
 CHROMA_DATABASE = os.getenv("CHROMA_DATABASE")
 CHROMA_API_KEY = os.getenv("CHROMA_API_KEY")
@@ -27,6 +25,7 @@ embeddings = JinaEmbeddings(
 
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
+    google_api_key=os.getenv("GEMINI_API_KEY"),
     temperature=0.3
 )
 
