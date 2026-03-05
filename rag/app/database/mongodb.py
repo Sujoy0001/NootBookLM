@@ -10,4 +10,4 @@ client = AsyncIOMotorClient(MONGO_URL)
 
 database = client["NootBookLM"]
 docs_collection = database["docs"]
-chat_collection = database["chat_history"]
+# chat_collection = database["chat_history"]

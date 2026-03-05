@@ -6,8 +6,8 @@ import uuid
 import docx 
 from pypdf import PdfReader
 
-from database.mongodb import docs_collection 
-from model.docs import Document
+from ..database.mongodb import docs_collection 
+from ..model.docs import Document
 
 router = APIRouter()
 

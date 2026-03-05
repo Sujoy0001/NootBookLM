@@ -1,6 +1,6 @@
 from langchain_core.documents import Document as LangDocument
 from langchain_text_splitters import CharacterTextSplitter, RecursiveCharacterTextSplitter
-from database.mongodb import docs_collection
+from ..database.mongodb import docs_collection
 import requests
 
 async def load_user_documents(user_id: str):

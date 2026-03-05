@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from model.query import Query
-from service.answerGeneration import generate_answer
+from ..model.query import Query
+from ..service.answerGeneration import generate_answer
 
 router = APIRouter()
 

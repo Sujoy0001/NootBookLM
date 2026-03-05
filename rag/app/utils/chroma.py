@@ -2,7 +2,7 @@ import chromadb
 import os
 from langchain_core.embeddings import Embeddings
 from dotenv import load_dotenv
-from utils.jina import JinaEmbeddings
+from .jina import JinaEmbeddings
 
 load_dotenv()
 
