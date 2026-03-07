@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from app.routes import upload, rag, ans
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
 
 app = FastAPI(title="Rag server", description="A FastAPI server for Rag integration", version="1.0.0")
 

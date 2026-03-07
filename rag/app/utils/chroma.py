@@ -1,3 +1,4 @@
+from annotated_types import doc
 import chromadb
 import os
 from langchain_core.embeddings import Embeddings
@@ -41,3 +42,24 @@ def create_vector_store(user_id: str, chunks):
     )
 
     return collection
+
+async def delete_vector_file(user_id: str, filename: str):
+    client = chromadb.CloudClient(
+        api_key=os.getenv("CHROMA_API_KEY"),
+        tenant=os.getenv("CHROMA_TENANT"),
+        database=os.getenv("CHROMA_DATABASE")
+    )
+
+    collection_name = f"rag_{user_id}"
+    collection = client.get_collection(name=collection_name)
+
+    # Fetch all documents with their IDs and metadata
+    results = collection.get(
+        where={"filename": filename}  # ✅ Filter directly by filename
+    )
+
+    # Delete all matching IDs at once
+    if results["ids"]:
+        collection.delete(ids=results["ids"])  # ✅ Bulk delete
+
+    return {"message": f"Vector data for '{filename}' deleted successfully."}
