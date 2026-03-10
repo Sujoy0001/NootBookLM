@@ -1,56 +1,32 @@
-import React from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../contexts/ThemeContext';
-import { BookOpen, LogOut, Sun, Moon } from 'lucide-react';
+import React from "react";
+import { Bot, Smile } from "lucide-react";
 
-export default function Navbar() {
-  const { currentUser, logout } = useAuth();
-  const { isDark, toggleTheme } = useTheme();
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/login');
-    } catch (error) {
-      console.error("Failed to log out", error);
-    }
-  };
-
+export default function Header() {
   return (
-    <nav className="glass-header">
-      <div className="container flex-between" style={{ height: '70px' }}>
-        <Link to="/" className="flex-center" style={{ gap: '10px', textDecoration: 'none' }}>
-          <div className="btn-icon">
-            <BookOpen size={20} color="#818cf8" />
-          </div>
-          <h2 className="text-gradient" style={{ margin: 0, fontSize: '1.5rem', background: 'linear-gradient(135deg, #c7d2fe, #818cf8, #e879f9)' }}>NootBookLM</h2>
-        </Link>
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          <button onClick={toggleTheme} className="btn-icon" style={{ padding: '8px' }} aria-label="Toggle Theme">
-            {isDark ? <Sun size={20} color="var(--text-main)" /> : <Moon size={20} color="var(--text-main)" />}
-          </button>
-          {currentUser ? (
-            <>
-              <Link to="/main" className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>Workspace</Link>
-              <button onClick={handleLogout} className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem', display: 'flex', gap: '8px' }}>
-                <LogOut size={16} /> Logout
-              </button>
-            </>
-          ) : (
-            <>
-              {location.pathname !== '/login' && (
-                <Link to="/login" className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>Login</Link>
-              )}
-              {location.pathname !== '/register' && (
-                <Link to="/register" className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>Get Started</Link>
-              )}
-            </>
-          )}
+    <header className="w-full border-b border-gray-200 bg-white sujoy1">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
+
+        <div className="flex items-center gap-2 text-2xl font-semibold">
+          NotebookLM
         </div>
+
+        <nav className="flex items-center gap-8 text-lg">
+
+          <a href="#" className="font-medium underline underline-offset-4 text-gray-900">
+            Overview
+          </a>
+
+          <a href="#" className="font-medium hover:text-green-800 text-gray-900">
+            Login
+          </a>
+
+          <button className="border border-black px-5 py-2 rounded-xl bg-black text-white cursor-pointer transition">
+            Register
+          </button>
+
+        </nav>
+
       </div>
-    </nav>
+    </header>
   );
 }

@@ -1,43 +1,38 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
-import { ThemeProvider } from './contexts/ThemeContext';
-import Navbar from './components/Navbar';
-import ProtectedRoute from './components/ProtectedRoute';
+import React from "react";
+import "../src/index.css";
+import Header from "./components/Navbar";
 
-// Pages
-import LandingPage from './pages/LandingPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import MainPage from './pages/MainPage';
-
-function App() {
+export default function App() {
   return (
-    <Router>
-      <ThemeProvider>
-        <AuthProvider>
-          <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-          <Navbar />
-          <main style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative' }}>
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route 
-                path="/main" 
-                element={
-                  <ProtectedRoute>
-                    <MainPage />
-                  </ProtectedRoute>
-                } 
-              />
-            </Routes>
-          </main>
+    <div className="min-h-screen bg-white flex flex-col items-center justify-between text-center">
+
+      <Header />
+
+      <div className="p-2 flex flex-col items-center justify-center">
+        <h1 className="text-7xl font-bold text-black sujoy1">
+          Hello, <span className="text-gradient">NootBookLM!</span>
+        </h1>
+
+        <p className="max-w-3xl text-xl text-gray-600 mt-6 leading-relaxed">
+          Upload PDFs, Markdown, and TXT files. Instantly ask questions, extract insights, and summarize complex topics using our advanced RAG pipeline.
+        </p>
+
+        <div className="flex gap-4 mt-8 sujoy1">
+          <button className="bg-black text-white px-8 py-3 rounded-xl text-lg font-medium hover:opacity-90 transition cursor-pointer">
+            Try NotebookLM
+          </button>
+
+          <button className="bg-white border-2 border-black text-black px-8 py-3 rounded-xl text-lg font-medium hover:bg-gray-100 transition cursor-pointer">
+            Login
+          </button>
         </div>
-      </AuthProvider>
-    </ThemeProvider>
-  </Router>
+      </div>
+
+      <div className="flex justify-center mb-8">
+         <h2 className="text-3xl italic text-gray-600 text-gradient">
+          Your AI-Powered Research Partner
+        </h2>
+      </div>
+    </div>
   );
 }
-
-export default App;
