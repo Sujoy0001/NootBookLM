@@ -1,0 +1,72 @@
+{
+  "cars": [
+    {
+      "brand": "Tesla",
+      "model": "Model 3",
+      "year": 2023,
+      "type": "Electric Sedan",
+      "price_usd": 40000,
+      "specs": {
+        "battery": "60 kWh",
+        "range_km": 491,
+        "top_speed_kmh": 225
+      },
+      "features": [
+        "Autopilot",
+        "Touchscreen Display",
+        "Over-the-air updates"
+      ]
+    },
+    {
+      "brand": "BMW",
+      "model": "X5",
+      "year": 2022,
+      "type": "SUV",
+      "price_usd": 65000,
+      "specs": {
+        "engine": "3.0L Turbo",
+        "horsepower": 335,
+        "top_speed_kmh": 243
+      },
+      "features": [
+        "All-wheel drive",
+        "Leather seats",
+        "Panoramic sunroof"
+      ]
+    },
+    {
+      "brand": "Toyota",
+      "model": "Fortuner",
+      "year": 2023,
+      "type": "SUV",
+      "price_usd": 42000,
+      "specs": {
+        "engine": "2.8L Diesel",
+        "horsepower": 201,
+        "mileage_kmpl": 14
+      },
+      "features": [
+        "Off-road capability",
+        "7-seater",
+        "Cruise control"
+      ]
+    },
+    {
+      "brand": "Hyundai",
+      "model": "Creta",
+      "year": 2024,
+      "type": "Compact SUV",
+      "price_usd": 20000,
+      "specs": {
+        "engine": "1.5L Petrol",
+        "horsepower": 115,
+        "mileage_kmpl": 17
+      },
+      "features": [
+        "Touchscreen infotainment",
+        "Wireless charging",
+        "Sunroof"
+      ]
+    }
+  ]
+}

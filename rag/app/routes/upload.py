@@ -5,6 +5,7 @@ import os
 import uuid
 import docx 
 from pypdf import PdfReader
+import json
 
 from ..database.mongodb import docs_collection 
 from ..model.docs import Document
@@ -29,6 +30,7 @@ SUPPORTED_EXTENSIONS = {
     ".cpp",
     ".html",
     ".css",
+    ".json",
 }
 
 def extract_pdf_text(path: str) -> str:
@@ -47,6 +49,29 @@ def extract_docx_text(path: str) -> str:
 def extract_plain_text(path: str) -> str:
     with open(path, "r", encoding="utf-8", errors="ignore") as f:
         return f.read()
+    
+def extract_text_with_keys(path: str) -> str:
+    with open(path, "r", encoding="utf-8", errors="ignore") as f:
+        data = json.load(f)
+        
+    texts = []
+    
+    def extract(obj, parent_key=""):
+        if isinstance(obj, dict):
+            for key, value in obj.items():
+                new_key = f"{parent_key}.{key}" if parent_key else key
+                extract(value, new_key)
+
+        elif isinstance(obj, list):
+            for i, item in enumerate(obj):
+                extract(item, f"{parent_key}[{i}]")
+        
+        else:
+            texts.append(f"{parent_key}: {obj}")
+
+    extract(data)
+    
+    return "\n".join(texts)
 
 
 @router.post("/document/uploads")

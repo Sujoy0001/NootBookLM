@@ -1,0 +1,96 @@
+{
+  "aboutBox": [
+    {
+      "image": "TARAPADA.png",
+      "CV": "Tarapada Garai (CV).pdf"
+    },
+    {
+      "about": [
+        "I’m Tarapada Garai, a dedicated full-stack developer with six months of experience in building responsive, user-friendly web applications. I began as a front-end developer, creating clean and engaging UIs, and have since expanded into backend development to build complete, scalable solutions.",
+        "What sets me apart is my ability to integrate AI features into real-world projects.",
+        "Projects: Google Keep Clone (AI-generated note titles), Instagram Clone (AI-generated bios and captions).",
+        "I use AI effectively in full-stack projects to improve user experience and productivity. I enjoy solving real-world problems and collaborating on innovative ideas."
+      ],
+      "hobbies": ["Coding", "Painting", "Photography", "Learning", "Cycling", "Video Game"],
+      "languages": ["English", "Hindi", "Bengali"]
+    }
+  ],
+  "experiences": [
+    {
+      "clientImage": "client4.jpg",
+      "name": "Animesh Dey",
+      "role": "Founder of KRISHTI",
+      "feedback": "Tarapada truly exceeded my expectations. He listened carefully, understood my vision, and brought it to life flawlessly.",
+      "project": "KRISHTI"
+    },
+    {
+      "clientImage": "client5.jpeg",
+      "name": "Animesh Maji",
+      "role": "Founder of GI BENGAL DOKRA",
+      "feedback": "Very creative and professional. Delivered a modern, fast, and user-friendly website.",
+      "project": "Uniquedokraworkshop"
+    },
+    {
+      "clientImage": "client1.png",
+      "name": "Santanu Dutta",
+      "role": "Founder of Gumut RGCSA",
+      "feedback": "Hard to find such professional developers. Built exactly what I imagined.",
+      "project": "Online Exam"
+    },
+    {
+      "clientImage": "client3.jpg",
+      "name": "Alhaj Hafez Ansar Ali Shah",
+      "role": "Founder of Rupsona Iqra Madrasa Mission",
+      "feedback": "Anticipated everything and added extra value to the project.",
+      "project": "Rupsona Iqra Madrasa Mission"
+    },
+    {
+      "clientImage": "client2.png",
+      "name": "Bhabasindu Garai",
+      "role": "Founder of Birsingha RGCSA",
+      "feedback": "Amazing work ethic and dedication.",
+      "project": "Computer Coaching Website"
+    },
+    {
+      "clientImage": "client6.jpeg",
+      "name": "Gobinda Chowdhury",
+      "role": "Founder of Teer Results",
+      "feedback": "Fast delivery and great results.",
+      "project": "Real Bhutan"
+    },
+    {
+      "name": "Teaching Experience",
+      "duration": "Sep 2022 - Jun 2024",
+      "description": "Worked at a computer coaching center teaching MS Office, HTML, CSS, C language, and basic computer skills."
+    }
+  ],
+  "hackathon": [
+    {
+      "date": "28 Sep 2024",
+      "event": "Dev Innov8+ Hackathon",
+      "achievement": "Secured 4th place in the entire college"
+    }
+  ],
+  "education": [
+    {
+      "duration": "2024 - 2027",
+      "degree": "Bachelor Of Computer Application",
+      "institute": "Brainware University"
+    },
+    {
+      "duration": "2021 - 2024",
+      "degree": "Bachelor Of Arts",
+      "institute": "Swami Dhananjoy Das Kathiababa Mahavidyalaya"
+    },
+    {
+      "duration": "2019 - 2021",
+      "degree": "Higher Secondary",
+      "institute": "Bon Birsingha Barada Sundari High School"
+    },
+    {
+      "duration": "2018",
+      "degree": "Matriculation",
+      "institute": "Bon Birsingha Barada Sundari High School"
+    }
+  ]
+}
