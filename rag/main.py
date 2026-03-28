@@ -4,7 +4,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 
-app = FastAPI(title="Rag server", description="A FastAPI server for Rag integration", version="1.0.0")
+from app.v2 import upload_route
+
+app = FastAPI(title="Rag server", description="A FastAPI server for Rag integration", version="2.1.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -23,3 +25,9 @@ app.include_router(upload.router, prefix="/api/v1", tags=["Document Upload"])
 app.include_router(rag.router, prefix="/api/v1", tags=["RAG"])
 
 app.include_router(ans.router, prefix="/api/v1", tags=["Answer Generation"])
+
+
+# v2 routes
+
+app.include_router(upload_route.router, prefix="/api/v2", tags=["v2"])
+

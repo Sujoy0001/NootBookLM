@@ -20,8 +20,7 @@ async def fetch_document_from_mongo(user_id: str, filename: str):
     raise Exception("Document not found for this user")
 
 
-@router.post("/rag/ingest")
-async def ingest_user_documents(user_id: str):
+async def ingest_user_documents_core(user_id: str):
 
     try:
         documents = await load_user_documents(user_id)
@@ -39,3 +38,11 @@ async def ingest_user_documents(user_id: str):
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+
+@router.post("/rag/ingest")
+async def ingest_user_documents(user_id: str):
+
+    result = await ingest_user_documents_core(user_id)
+
+    return result

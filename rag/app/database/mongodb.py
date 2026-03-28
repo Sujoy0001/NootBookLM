@@ -9,7 +9,7 @@ MONGO_URL = os.getenv("MONGO_URL")
 if not MONGO_URL:
     raise ValueError("MONGO_URL is not set in .env file")
 
-print(f"Connecting to: {MONGO_URL}")  
+# print(f"Connecting to: {MONGO_URL}")  
 
 client = AsyncIOMotorClient(MONGO_URL)
 database = client["NootBookLM"]
