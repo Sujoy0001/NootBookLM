@@ -63,3 +63,17 @@ async def delete_vector_file(user_id: str, filename: str):
         collection.delete(ids=results["ids"])  # ✅ Bulk delete
 
     return {"message": f"Vector data for '{filename}' deleted successfully."}
+
+
+async def delete_user_vector_files(user_id: str):
+    client = chromadb.CloudClient(
+        api_key=os.getenv("CHROMA_API_KEY"),
+        tenant=os.getenv("CHROMA_TENANT"),
+        database=os.getenv("CHROMA_DATABASE")
+    )
+    
+    collection_name = f"rag_{user_id}"
+    
+    result = client.delete_collection(name=collection_name)
+    
+    return result

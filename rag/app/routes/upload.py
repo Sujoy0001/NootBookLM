@@ -11,8 +11,6 @@ import httpx
 from urllib.parse import urlparse
 
 from ..database.mongodb import docs_collection 
-from ..model.docs import Document
-from ..utils.chroma import delete_vector_file
 from ..model.url import URL as UrlIngestionRequest
 
 router = APIRouter()
@@ -225,35 +223,6 @@ async def upload_document(file: UploadFile = File(...), user_id: str = "anonymou
         }
     )
 
-@router.get("/documents/{user_id}")
-async def list_user_documents(user_id: str):
-
-    user_docs = await docs_collection.find_one({"user_id": user_id})
-
-    if not user_docs or "documents" not in user_docs:
-        raise HTTPException(status_code=404, detail="No documents found for this user")
-    
-    return JSONResponse(content={"documents": user_docs["documents"]})
-
-@router.delete("/documents/{user_id}/{filename}")
-async def delete_user_document(user_id: str, filename: str):
-
-    result = await docs_collection.update_one(
-        {"user_id": user_id},
-        {"$pull": {"documents": {"filename": filename}}}
-    )
-
-    if result.modified_count == 0:
-        raise HTTPException(status_code=404, detail="Document not found for this user")
-    
-    result = await delete_vector_file(user_id, filename)
-
-    context = {
-        "message": f"Document '{filename}' deleted successfully for user '{user_id}' from mongodb.",
-        "vector_deletion": result
-    }
-    
-    return JSONResponse(content=context)
 
 @router.post("/document/url")
 async def upload_document_from_url(payload: UrlIngestionRequest):
@@ -309,3 +278,13 @@ async def upload_document_from_url(payload: UrlIngestionRequest):
             "characters_extracted": len(text),
         },
     }
+    
+@router.get("/documents/{user_id}")
+async def list_user_documents(user_id: str):
+
+    user_docs = await docs_collection.find_one({"user_id": user_id})
+
+    if not user_docs or "documents" not in user_docs:
+        raise HTTPException(status_code=404, detail="No documents found for this user")
+    
+    return JSONResponse(content={"documents": user_docs["documents"]})
