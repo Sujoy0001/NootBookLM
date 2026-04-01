@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
-from ..service.ingestion import load_user_documents, split_documents
-from ..utils.chroma import create_vector_store
-from ..database.mongodb import docs_collection
+from ...service.ingestion import load_user_documents, split_documents
+from ...utils.chroma import create_vector_store
+from ...database.mongodb import docs_collection
 
 router = APIRouter()
 

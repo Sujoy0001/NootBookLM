@@ -1,8 +1,8 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 
-from ..database.mongodb import docs_collection
-from ..utils.chroma import delete_user_vector_files, delete_vector_file
+from ...database.mongodb import docs_collection
+from ...utils.chroma import delete_user_vector_files, delete_vector_file
 
 router = APIRouter()
 

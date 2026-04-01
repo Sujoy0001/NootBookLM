@@ -10,8 +10,8 @@ import json
 import httpx
 from urllib.parse import urlparse
 
-from ..database.mongodb import docs_collection 
-from ..model.url import URL as UrlIngestionRequest
+from ...database.mongodb import docs_collection 
+from ...model.url import URL as UrlIngestionRequest
 
 router = APIRouter()
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from ..routes.upload import upload_document_core
-from ..routes.rag import ingest_user_documents_core
+from ..v1.upload import upload_document_core
+from ..v1.rag import ingest_user_documents_core
 from fastapi.responses import JSONResponse
 
 from fastapi import BackgroundTasks
