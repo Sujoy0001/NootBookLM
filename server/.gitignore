@@ -1,25 +1,2 @@
-# Environment files
-.env
-.env.*
-!.env.example
-
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.sqlite3
-
-# Virtual environment
-venv/
-.env/
-.venv/
 venv
-
-# IDE
-.vscode/
-.idea/
-
-# OS
-.DS_Store
-Thumbs.db
+.venv
