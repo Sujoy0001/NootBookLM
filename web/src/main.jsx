@@ -9,6 +9,7 @@ import Register from "./pages/register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Homelayout from "./layout/homelayout";
+import NotFoundPage from "./pages/NotFoundPage";
 
 const router = createBrowserRouter([
   {
@@ -21,10 +22,11 @@ const router = createBrowserRouter([
     ]
   },
   {
-    path: "/home",
+    path: "/app",
     element: <ProtectedRoute><Homelayout /></ProtectedRoute>,
     children: [
       { index: true, element: <Dashboard /> },
+      { path: "*", element: <NotFoundPage /> }
     ]
   }
 ])

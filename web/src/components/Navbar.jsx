@@ -1,6 +1,6 @@
 // Navbar.jsx
 import React, { useState, useEffect } from 'react';
-import { auth } from '../lib/firebase';
+import { auth } from '../LIB/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { 
   User, 
@@ -18,7 +18,7 @@ import {
 const Navbar = () => {
   const [user, setUser] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [systemStatus, setSystemStatus] = useState('Operational');
+  const systemStatus = 'Operational';
 
   // Listen to auth state changes
   useEffect(() => {
@@ -67,10 +67,7 @@ const Navbar = () => {
   };
 
   // Get user avatar/initial
-  const getUserInitial = () => {
-    const name = getUserDisplayName();
-    return name.charAt(0).toUpperCase();
-  };
+  
 
   // Format user details for dropdown
   const getUserDetails = () => {
