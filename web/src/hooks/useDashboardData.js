@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { auth } from "../LIB/firebase";
+import { auth } from "../lib/firebase";
 
 export default function useDashboardData() {
   const [data, setData] = useState(null);

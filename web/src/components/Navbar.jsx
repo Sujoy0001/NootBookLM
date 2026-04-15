@@ -1,6 +1,6 @@
 // Navbar.jsx
 import React, { useState, useEffect } from 'react';
-import { auth } from '../LIB/firebase';
+import { auth } from '../lib/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { 
   User, 

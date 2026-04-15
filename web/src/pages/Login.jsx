@@ -5,7 +5,7 @@ import {
   signInWithEmailAndPassword 
 } from "firebase/auth";
 import { Mail, Lock, ArrowLeft } from "lucide-react";
-import { auth, googleProvider, githubProvider } from "../LIB/firebase";
+import { auth, googleProvider, githubProvider } from "../lib/firebase";
 import RegisterUI from "../ui/registerUI";
 
 const GoogleIcon = () => (
