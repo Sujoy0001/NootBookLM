@@ -164,3 +164,4 @@ class DocumentDeleteView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Document.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+ 
