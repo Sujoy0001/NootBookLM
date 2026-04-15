@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import ProtectedRoute from "./utils/ProtectedRoute";
+import ProtectedRoute from "./utils/ProtectedRoute.jsx";
 import Openlayout from "./layout/openlayout";
 import LandingPage from "./pages/landingPage"
 import Register from "./pages/register";
