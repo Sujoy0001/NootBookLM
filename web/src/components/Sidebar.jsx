@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink } from "react-router-dom";
 import { 
-  Key, Users, Wallet, Puzzle, Settings, 
+  LayoutDashboard, Upload, Wallet, Puzzle, User, Settings,
   MessageSquare, ChevronLeft, Building2
 } from 'lucide-react';
 
@@ -9,21 +9,22 @@ const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const NAV_ITEMS = [
-    { icon: Key, label: 'Overview', path: '/app' },
-    { icon: Users, label: 'People', path: '/app/people' },
+    { icon: LayoutDashboard, label: 'Overview', path: '/app', exact: true},
+    { icon: Upload, label: 'Upload', path: '/app/upload' },
     { icon: Wallet, label: 'Billing', path: '/app/billing' },
     { icon: Puzzle, label: 'Integrations', path: '/app/integrations' },
-    { icon: Settings, label: 'Settings', path: '/app/settings' },
+    { icon: User, label: 'Profile', path: '/app/profile' },
   ];
 
   const BOTTOM_ITEMS = [
-    { icon: MessageSquare, label: 'Feedback', path: '/feedback', color: 'text-rose-400' },
+    { icon: Settings, label: 'Settings', path: '/app/settings', color: 'text-white' },
+    { icon: MessageSquare, label: 'Feedback', path: '/app/feedback', color: 'text-rose-400' },
   ];
 
   return (
     <div
       className={`
-        h-full flex flex-col bg-zinc-800 text-zinc-300 sujoy2
+        h-full flex flex-col bg-[#262626] text-zinc-300 sujoy2
         border-r border-zinc-700 transition-all duration-300
         ${isCollapsed ? 'w-16' : 'w-64'} shrink-0
       `}
@@ -53,6 +54,7 @@ const Sidebar = () => {
               <NavLink
                 to={item.path}
                 key={item.label}
+                end={item.path === "/app"} 
                 className={({ isActive }) => `
                   relative w-full flex items-center rounded transition-all duration-200 group hover:bg-zinc-900 cursor-pointer
                   ${isCollapsed ? 'justify-center py-3' : 'px-3 py-2.5'}
@@ -92,7 +94,7 @@ const Sidebar = () => {
                     relative w-full flex items-center rounded transition-all duration-200 group cursor-pointer
                     ${isCollapsed ? 'justify-center py-3' : 'px-3 py-2.5'}
                     ${isActive 
-                      ? 'bg-zinc-800 text-white' 
+                      ? 'bg-zinc-950 text-white' 
                       : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
                     }
                   `}
