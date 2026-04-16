@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default function SkeletonUI() {
   return (
     <div className="h-full w-full py-6">
@@ -16,7 +18,7 @@ export default function SkeletonUI() {
         {[...Array(2)].map((_, i) => (
           <div
             key={i}
-            className="h-72 w-full bg-zinc-800 border border-zinc-800 rounded-xl p-5 space-y-4 animate-pulse"
+            className="h-72 w-full bg-zinc-900 border border-zinc-800 rounded-xl space-y-4 animate-pulse"
           >
           </div>
         ))}
