@@ -10,7 +10,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Homelayout from "./layout/homelayout";
 import NotFoundPage from "./pages/NotFoundPage";
-import ProtectedRoute from "./utils/ProtectedRoute.jsx";
+import ProtectedRoute from "./utils/ProtectedRoute.jsx";  
 
 const router = createBrowserRouter([
   {

@@ -20,6 +20,7 @@ export default function SkeletonUI() {
             key={i}
             className="h-72 w-full bg-zinc-900 border border-zinc-800 rounded-xl space-y-4 animate-pulse"
           >
+            
           </div>
         ))}
       </div>
