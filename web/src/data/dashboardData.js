@@ -37,5 +37,5 @@ export const storageChartData = [
   { name: "Mar", storage: 1.8 },
   { name: "Apr", storage: 2.2 },
   { name: "May", storage: 2.9 },
-  { name: "Jun", storage: 3.2 },
+  { name: "Jun", storage: 0.2 },
 ];
