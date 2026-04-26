@@ -1,0 +1,68 @@
+export const uploadedDocs = [
+  {
+    id: 1,
+    name: "product_manual.pdf",
+    ext: "pdf",
+    status: "Deployed",
+    size: "4.2 MB",
+    date: "Today, 10:24 AM",
+    type: "active",
+  },
+  {
+    id: 2,
+    name: "company_policy.pdf",
+    ext: "pdf",
+    status: "Deployed",
+    size: "2.8 MB",
+    date: "Today, 9:05 AM",
+    type: "active",
+  },
+  {
+    id: 3,
+    name: "faq_support.md",
+    ext: "md",
+    status: "Deployed",
+    size: "0.3 MB",
+    date: "Yesterday",
+    type: "active",
+  },
+  {
+    id: 4,
+    name: "customers_data.csv",
+    ext: "csv",
+    status: "Deployed",
+    size: "6.1 MB",
+    date: "Yesterday",
+    type: "active",
+  },
+  {
+    id: 5,
+    name: "onboarding_guide.docx",
+    ext: "docx",
+    status: "Deployed",
+    size: "1.8 MB",
+    date: "Apr 22",
+    type: "active",
+  },
+  {
+    id: 6,
+    name: "release_notes_v3.txt",
+    ext: "txt",
+    status: "Deployed",
+    size: "0.9 MB",
+    date: "Just now",
+    type: "active",
+  },
+  {
+    id: 7,
+    name: "legacy_docs_old.pdf",
+    ext: "pdf",
+    status: "Failed",
+    size: "2.3 MB",
+    date: "Apr 20",
+    type: "suspended",
+  },
+];
+
+export const acceptedFormats = [".pdf", ".txt", ".md", ".csv", ".docx"];
+export const maxFileSizeMB = 50;
