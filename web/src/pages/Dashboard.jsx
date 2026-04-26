@@ -29,7 +29,7 @@ export default function DashboardHome() {
         <div className="flex items-center space-x-4 sujoy1 text-sm">
           <Link
             to="/app/integrations"
-            className="px-3 py-2 rounded text-white hover:bg-white hover:text-black font-bold bg-white/10 transition-all duration-150"
+            className="px-3 py-2 rounded text-white hover:bg-white hover:text-black font-bold border border-white/20 transition-all duration-150"
           >
             <PlusCircleIcon className="w-4 h-4 inline mr-2" />
             Connect API
@@ -53,7 +53,7 @@ export default function DashboardHome() {
             {dashboardStats.map((item, index) => (
               <div
                 key={index}
-                className="bg-white/5 rounded-2xl p-5 border border-white/10"
+                className="bg-zinc-950 rounded-2xl p-5 border border-white/10"
               >
                 <h3 className="text-gray-200 text-sm">{item.title}</h3>
                 <h1 className="text-3xl font-bold mt-2">{item.value}</h1>
@@ -63,7 +63,7 @@ export default function DashboardHome() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white/5 rounded-2xl p-5 border border-white/10 h-87.5">
+            <div className="bg-zinc-950 rounded-2xl p-5 border border-white/10 h-87.5">
               <h2 className="text-lg font-semibold mb-4">Total API Calls</h2>
               <ResponsiveContainer width="100%" height="90%">
                 <BarChart data={apiChartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
@@ -100,7 +100,7 @@ export default function DashboardHome() {
               </ResponsiveContainer>
             </div>
 
-            <div className="bg-white/5 rounded-2xl p-5 border border-white/10 h-87.5">
+            <div className="bg-zinc-950 rounded-2xl p-5 border border-white/10 h-87.5">
               <h2 className="text-lg font-semibold mb-4">Storage Used</h2>
               <ResponsiveContainer width="100%" height="90%">
                 <LineChart data={storageChartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>

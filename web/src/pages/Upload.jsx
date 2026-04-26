@@ -10,17 +10,16 @@ export default function UploadPage() {
     <div className="min-h-screen px-2 sujoy1">
       <div className="mx-auto space-y-8">
         <div>
-          <h1 className="text-3xl font-bold mb-4 sujoy2">Document Upload</h1>
+          <h1 className="text-3xl font-bold mb-6 sujoy2">Document Upload</h1>
 
           <div className="bg-zinc-950 border border-white/20 rounded-xl relative overflow-hidden flex flex-col md:flex-row">
             <div className="p-8 md:w-1/2 flex flex-col justify-center">
               <h2 className="text-2xl font-semibold mb-3">
-                Get organized with Projects
+                Get organized your documents in one place
               </h2>
 
               <p className="text-zinc-300 mb-6 max-w-sm">
-                An easier way to organize your resources and collaborate with
-                team members.
+                Upload your documents and let our RAG engine handle the rest. From extracting knowledge to generating context-aware answers, our platform makes information retrieval effortless and efficient.
               </p>
 
               <div className="flex items-center gap-6">

@@ -131,7 +131,7 @@ export default function ShowUploadData({ services }) {
 
       {selectedFile && (
         <div className="fixed inset-0 sujoy2 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-[#111] border border-zinc-800 rounded-2xl p-6 w-[400px]">
+          <div className="bg-[#111] border border-zinc-800 rounded p-6 w-[400px]">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl text-white font-semibold">
                 Confirm Delete
@@ -150,14 +150,14 @@ export default function ShowUploadData({ services }) {
               type="text"
               value={confirmName}
               onChange={(e) => setConfirmName(e.target.value)}
-              className="w-full bg-[#0d0d0d] border border-zinc-700 rounded-xl px-4 py-3 text-white outline-none"
+              className="w-full bg-[#0d0d0d] border border-zinc-700 rounded px-4 py-3 text-white outline-none"
               placeholder="Enter file name"
             />
 
             <button
               onClick={handleDelete}
               disabled={confirmName !== selectedFile.name}
-              className="w-full mt-4 cursor-pointer bg-red-500 disabled:bg-zinc-700 text-white py-3 rounded-xl"
+              className="w-full mt-4 cursor-pointer bg-red-500 disabled:bg-zinc-700 text-white py-3 rounded"
             >
               Delete File
             </button>
