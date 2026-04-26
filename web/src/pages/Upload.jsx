@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { Upload } from "lucide-react";
 import ShowUploadData from "../ui/ShowUploadData";
-import { uploadedDocs } from "../data/uploadData";
+import { uploadedDocs } from "../data/Uploaddata";
 
 export default function UploadPage() {
   const fileInputRef = useRef(null);
