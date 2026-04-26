@@ -16,7 +16,7 @@ import ProfilePage from "./pages/ProfilePage";
 import IntegrationsPage from "./pages/IntegrationsPage";
 
 
-// import ProtectedRoute from "./utils/ProtectedRoute.jsx";  
+import ProtectedRoute from "./utils/ProtectedRoute.jsx";  
 
 const router = createBrowserRouter([
   {
@@ -30,7 +30,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/app",
-    element: <Homelayout />,
+    element: <ProtectedRoute><Homelayout /></ProtectedRoute>,
     children: [
       { index: true, element: <Dashboard /> },
       { path: "upload", element: <UploadPage /> },
