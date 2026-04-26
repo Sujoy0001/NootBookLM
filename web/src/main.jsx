@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Homelayout from "./layout/homelayout";
 import NotFoundPage from "./pages/NotFoundPage";
 import UploadPage from "./pages/Upload";
+import PricingPage from "./pages/PricingPage";
 
 
 // import ProtectedRoute from "./utils/ProtectedRoute.jsx";  
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Dashboard /> },
       { path: "upload", element: <UploadPage /> },
+      { path: "billing", element: <PricingPage /> },
       { path: "*", element: <NotFoundPage /> }
     ]
   }
