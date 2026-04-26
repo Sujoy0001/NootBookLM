@@ -12,6 +12,8 @@ import Homelayout from "./layout/homelayout";
 import NotFoundPage from "./pages/NotFoundPage";
 import UploadPage from "./pages/Upload";
 import PricingPage from "./pages/PricingPage";
+import ProfilePage from "./pages/ProfilePage";
+import IntegrationsPage from "./pages/IntegrationsPage";
 
 
 // import ProtectedRoute from "./utils/ProtectedRoute.jsx";  
@@ -33,6 +35,8 @@ const router = createBrowserRouter([
       { index: true, element: <Dashboard /> },
       { path: "upload", element: <UploadPage /> },
       { path: "billing", element: <PricingPage /> },
+      { path: "profile", element: <ProfilePage /> },
+      { path: "integrations", element: <IntegrationsPage /> },
       { path: "*", element: <NotFoundPage /> }
     ]
   }
