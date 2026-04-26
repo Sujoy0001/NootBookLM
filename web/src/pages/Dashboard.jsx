@@ -19,7 +19,7 @@ import {
   CartesianGrid,
 } from "recharts";
 
-export default function DashboardHome() {
+export default function Dashboard() {
   const loading = false;
 
   return (
