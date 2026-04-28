@@ -53,6 +53,13 @@ app.use(cors({
 
 app.use(express.json());
 
+// ---------------------------------------------------------
+// Route: Health Check (Root)
+// ---------------------------------------------------------
+app.get('/', (req, res) => {
+  res.status(200).json({ status: "online", message: "RagEngine Backend API is running!" });
+});
+
 // Multer setup (in-memory storage)
 const upload = multer({ storage: multer.memoryStorage() });
 
