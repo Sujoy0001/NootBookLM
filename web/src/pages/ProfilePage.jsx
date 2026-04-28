@@ -66,7 +66,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white p-6">
+    <div className="sujoy2 px-2">
       <div className="max-w-3xl mx-auto space-y-8">
         {/* Profile Card */}
         <div className="bg-[#111] border border-zinc-800 rounded-xl p-6">
@@ -113,7 +113,7 @@ export default function ProfilePage() {
           <button
             onClick={handleDelete}
             disabled={confirmText !== user.email}
-            className="w-full flex items-center justify-center gap-2 bg-red-600 disabled:bg-zinc-700 text-white py-3 rounded-lg"
+            className="w-full cursor-pointer flex items-center justify-center gap-2 bg-red-600 disabled:bg-zinc-700 text-white py-3 rounded-lg"
           >
             <Trash2 size={18} />
             Delete Account

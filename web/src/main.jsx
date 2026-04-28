@@ -17,6 +17,7 @@ import IntegrationsPage from "./pages/IntegrationsPage";
 
 
 import ProtectedRoute from "./utils/ProtectedRoute.jsx";  
+import { FirebaseProvider } from "./context/FirebaseContext.jsx";
 
 const router = createBrowserRouter([
   {
@@ -44,6 +45,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <FirebaseProvider>
+      <RouterProvider router={router} />
+    </FirebaseProvider>
   </React.StrictMode>
 );

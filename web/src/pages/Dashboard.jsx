@@ -1,11 +1,7 @@
 import SkeletonUI from "../ui/SkeletonUi";
 import { Link } from "react-router-dom";
 import { PlusCircleIcon, Upload } from "lucide-react";
-import {
-  dashboardStats,
-  apiChartData,
-  storageChartData,
-} from "../data/dashboardData";
+import { useFirebaseData } from "../context/FirebaseContext";
 
 import {
   ResponsiveContainer,
@@ -20,7 +16,13 @@ import {
 } from "recharts";
 
 export default function Dashboard() {
-  const loading = false;
+  const { data, loading } = useFirebaseData();
+
+  const isLoading = loading || !data;
+
+  const dashboardStats = data?.dashboardStats || [];
+  const apiChartData = data?.apiChartData || [];
+  const storageChartData = data?.storageChartData || [];
 
   return (
     <div className="h-full w-full px-2 sujoy1">
@@ -45,7 +47,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <SkeletonUI />
       ) : (
         <>
