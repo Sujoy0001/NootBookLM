@@ -60,7 +60,7 @@ const plans = [
 
 export default function PricingPage() {
   return (
-    <div className="px-2 sujoy1">
+    <div className="px-2 sujoy1 mb-8">
       <div className="text-left">
         <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-violet-400">
           Pricing

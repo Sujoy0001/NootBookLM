@@ -4,7 +4,7 @@ import {
   signInWithPopup, 
   createUserWithEmailAndPassword 
 } from "firebase/auth";
-import { Mail, Lock, ArrowLeft } from "lucide-react";
+import { Mail, Lock, User, ArrowLeft } from "lucide-react";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 import { auth, googleProvider, githubProvider } from "../lib/firebase";
 import RegisterUI from "../ui/registerUI";
@@ -26,22 +26,46 @@ const GitHubIcon = () => (
 
 export default function Register() {
   const navigate = useNavigate();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Navigate back to home
-  const handleBackToHome = () => {
-    navigate("/");
+  const handleBackToHome = () => navigate("/");
+
+  // Call the backend to initialize user data (Firestore & RTDB)
+  const initializeUserBackend = async (user, displayName) => {
+    try {
+      const token = await user.getIdToken();
+      const backendUrl = import.meta.env.VITE_NODE_SERVER_URL || "http://localhost:3000";
+      
+      const response = await fetch(`${backendUrl}/api/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: displayName || name,
+          email: user.email
+        })
+      });
+
+      if (!response.ok) {
+        console.error("Backend registration failed:", await response.text());
+      }
+    } catch (err) {
+      console.error("Backend registration error:", err);
+    }
   };
 
-  // Google Login
   const handleGoogle = async () => {
     setLoading(true);
     setError("");
     try {
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+      await initializeUserBackend(result.user, result.user.displayName);
       navigate("/app");
     } catch (err) {
       setError(err.message);
@@ -49,12 +73,12 @@ export default function Register() {
     }
   };
 
-  // GitHub Login
   const handleGithub = async () => {
     setLoading(true);
     setError("");
     try {
-      await signInWithPopup(auth, githubProvider);
+      const result = await signInWithPopup(auth, githubProvider);
+      await initializeUserBackend(result.user, result.user.displayName);
       navigate("/app");
     } catch (err) {
       setError(err.message);
@@ -62,10 +86,9 @@ export default function Register() {
     }
   };
 
-  // Email Register
   const handleEmailRegister = async (e) => {
     e.preventDefault();
-    if (!email || !password) {
+    if (!name || !email || !password) {
       setError("Please fill in all fields");
       return;
     }
@@ -77,7 +100,8 @@ export default function Register() {
     setLoading(true);
     setError("");
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      await initializeUserBackend(result.user, name);
       navigate("/app");
     } catch (err) {
       setError(err.message);
@@ -106,14 +130,12 @@ export default function Register() {
             <p className="text-gray-400">Join us and start your journey</p>
           </div>
 
-          {/* Error Message */}
           {error && (
             <div className="w-full max-w-md mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-500 text-sm text-center">
               {error}
             </div>
           )}
 
-          {/* Social Login */}
           <div className="w-full max-w-md space-y-3">
             <button
               onClick={handleGoogle}
@@ -134,7 +156,6 @@ export default function Register() {
             </button>
           </div>
 
-          {/* Divider */}
           <div className="relative w-full max-w-md my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-white/20"></div>
@@ -144,8 +165,21 @@ export default function Register() {
             </div>
           </div>
 
-          {/* Email Registration Form */}
           <form onSubmit={handleEmailRegister} className="w-full space-y-4 max-w-md">
+            {/* New Name Input */}
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+              <input
+                type="text"
+                placeholder="Full Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                disabled={loading}
+                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/20 rounded-lg focus:outline-none focus:border-white/50 transition-all duration-200 disabled:opacity-50"
+                required
+              />
+            </div>
+
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
               <input
@@ -185,7 +219,6 @@ export default function Register() {
             By creating an account you agree to the Terms of Service and our Privacy Policy. We'll occasionally send you emails about news, products, and services; you can opt-out anytime.
           </p>
 
-          {/* Login Link */}
           <p className="mt-6 text-sm text-gray-400">
             Already have an account?{" "}
             <button

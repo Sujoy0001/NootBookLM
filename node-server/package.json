@@ -14,10 +14,17 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
+    "start": "node --no-deprecation index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.4.1",
+    "firebase-admin": "^13.8.0",
+    "imagekit": "^6.0.0",
+    "multer": "^2.1.1",
     "socket.io": "^4.8.3"
   }
 }

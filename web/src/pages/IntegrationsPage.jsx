@@ -1,12 +1,9 @@
-import { useState, useRef } from "react";
-
-function generateKey() {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  const seg = (n) => Array.from({ length: n }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
-  return `rsk_${seg(8)}_${seg(16)}_${seg(8)}`;
-}
+import { useState, useRef, useEffect } from "react";
+import { auth } from "../lib/firebase";
+import { useUserData } from "../context/FirebaseContext";
 
 function maskKey(key) {
+  if (!key || typeof key !== 'string') return "";
   return key.slice(0, 10) + "•".repeat(16) + key.slice(-4);
 }
 
@@ -116,7 +113,8 @@ function DeleteModal({ keyName, onClose, onConfirm }) {
 }
 
 // ── Main Page ─────────────────────────────────────────────────
-export default function ApiKeysPage() {
+export default function IntegrationsPage() {
+  const { data: userData, loading } = useUserData();
   const [apiKey, setApiKey]       = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
@@ -125,26 +123,72 @@ export default function ApiKeysPage() {
   const [showWarning, setShowWarning] = useState(false);
   const warningTimer = useRef(null);
 
-  const handleCreate = (name) => {
-    setApiKey({
-      name,
-      value: generateKey(),
-      created: new Date().toLocaleDateString("en-US", {
-        month: "short", day: "numeric", year: "numeric",
-      }),
-    });
-    setKeyVisible(true);
-    setShowCreate(false);
-    setShowWarning(true);
-    clearTimeout(warningTimer.current);
-    warningTimer.current = setTimeout(() => setShowWarning(false), 8000);
+  // Sync API keys from context
+  useEffect(() => {
+    if (userData?.apiKeys && userData.apiKeys.length > 0) {
+      const latestKey = userData.apiKeys[userData.apiKeys.length - 1];
+      const keyValue = latestKey.value || latestKey.key || ""; // Handle legacy keys
+      
+      setApiKey({
+        name: latestKey.name || "Default Key",
+        value: keyValue,
+        created: new Date(latestKey.createdAt).toLocaleDateString("en-US", {
+          month: "short", day: "numeric", year: "numeric",
+        })
+      });
+    } else {
+      setApiKey(null);
+    }
+  }, [userData]);
+
+  const handleCreate = async (name) => {
+    try {
+      const token = await auth.currentUser.getIdToken();
+      const backendUrl = import.meta.env.VITE_NODE_SERVER_URL || "http://localhost:3000";
+      
+      const res = await fetch(`${backendUrl}/api/keys`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ name })
+      });
+
+      if (!res.ok) throw new Error("Failed to create key");
+
+      setKeyVisible(true);
+      setShowCreate(false);
+      setShowWarning(true);
+      clearTimeout(warningTimer.current);
+      warningTimer.current = setTimeout(() => setShowWarning(false), 8000);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to create API key");
+    }
   };
 
-  const handleDelete = () => {
-    setApiKey(null);
-    setKeyVisible(false);
-    setShowWarning(false);
-    setShowDelete(false);
+  const handleDelete = async () => {
+    if (!apiKey) return;
+    
+    try {
+      const token = await auth.currentUser.getIdToken();
+      const backendUrl = import.meta.env.VITE_NODE_SERVER_URL || "http://localhost:3000";
+      
+      const res = await fetch(`${backendUrl}/api/keys/${apiKey.value}`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+
+      if (!res.ok) throw new Error("Failed to delete key");
+
+      setKeyVisible(false);
+      setShowWarning(false);
+      setShowDelete(false);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete API key");
+    }
   };
 
   const handleCopy = () => {

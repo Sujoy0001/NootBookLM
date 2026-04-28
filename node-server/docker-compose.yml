@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  node-server:
+    build: .
+    container_name: nootbooklm-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env
+    restart: unless-stopped

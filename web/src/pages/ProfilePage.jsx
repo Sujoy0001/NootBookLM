@@ -1,29 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { auth, db } from "../lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
-import { onAuthStateChanged, deleteUser } from "firebase/auth";
+import { auth } from "../lib/firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { Trash2, UserX, LoaderCircle } from "lucide-react";
+import { useUserData } from "../context/FirebaseContext";
 
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
-  const [profileData, setProfileData] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const [confirmText, setConfirmText] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const { data: profileData, loading: profileLoading } = useUserData();
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-
-        const docRef = doc(db, "users", currentUser.uid);
-        const snap = await getDoc(docRef);
-
-        if (snap.exists()) {
-          setProfileData(snap.data());
-        }
-      }
-
-      setLoading(false);
+    const unsub = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setAuthLoading(false);
     });
 
     return () => unsub();
@@ -32,17 +24,32 @@ export default function ProfilePage() {
   const handleDelete = async () => {
     if (!user) return;
 
+    setIsDeleting(true);
     try {
-      await deleteUser(user);
-      alert("Account deleted successfully");
-    } catch (err) {
-      if (err.code === "auth/requires-recent-login") {
-        alert("Please login again before deleting account.");
-      } else {
-        console.error(err);
+      const token = await user.getIdToken();
+      const backendUrl = import.meta.env.VITE_NODE_SERVER_URL || "http://localhost:3000";
+
+      const response = await fetch(`${backendUrl}/api/auth/account`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+
+      if (!response.ok) {
+        throw new Error(await response.text());
       }
+
+      // Successfully deleted everything on backend, sign out locally
+      await signOut(auth);
+      // Navigation will be handled automatically by the ProtectedRoute or onAuthStateChanged
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete account. Please try again.");
+    } finally {
+      setIsDeleting(false);
     }
   };
+
+  const loading = authLoading || profileLoading;
 
   // Loading State
   if (loading) {
@@ -76,7 +83,7 @@ export default function ProfilePage() {
             <div>
               <p className="text-zinc-400 text-sm">Name</p>
               <p className="text-lg">
-                {user.displayName || profileData?.name || "N/A"}
+                {user.displayName || profileData?.profile?.name || profileData?.name || "N/A"}
               </p>
             </div>
 
@@ -112,11 +119,15 @@ export default function ProfilePage() {
 
           <button
             onClick={handleDelete}
-            disabled={confirmText !== user.email}
-            className="w-full cursor-pointer flex items-center justify-center gap-2 bg-red-600 disabled:bg-zinc-700 text-white py-3 rounded-lg"
+            disabled={confirmText !== user.email || isDeleting}
+            className="w-full cursor-pointer flex items-center justify-center gap-2 bg-red-600 disabled:bg-zinc-700 text-white py-3 rounded-lg transition-colors"
           >
-            <Trash2 size={18} />
-            Delete Account
+            {isDeleting ? (
+              <LoaderCircle size={18} className="animate-spin" />
+            ) : (
+              <Trash2 size={18} />
+            )}
+            {isDeleting ? "Deleting everything..." : "Delete Account"}
           </button>
         </div>
       </div>

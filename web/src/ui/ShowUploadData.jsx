@@ -7,6 +7,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import { auth } from "../lib/firebase";
 
 export default function ShowUploadData({ services }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -37,11 +38,33 @@ export default function ShowUploadData({ services }) {
     return filtered;
   }, [services, activeTab, searchTerm]);
 
-  const handleDelete = () => {
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async () => {
     if (confirmName === selectedFile.name) {
-      alert(`${selectedFile.name} deleted`);
-      setSelectedFile(null);
-      setConfirmName("");
+      setDeleting(true);
+      try {
+        const token = await auth.currentUser.getIdToken();
+        const backendUrl = import.meta.env.VITE_NODE_SERVER_URL || "http://localhost:3000";
+        
+        const response = await fetch(`${backendUrl}/api/upload/${selectedFile.id}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) throw new Error("Delete failed");
+        
+        // Success: Close modal (Firestore onSnapshot will update the list automatically)
+        setSelectedFile(null);
+        setConfirmName("");
+      } catch (error) {
+        console.error("Failed to delete:", error);
+        alert("Failed to delete file.");
+      } finally {
+        setDeleting(false);
+      }
     }
   };
 
@@ -156,10 +179,10 @@ export default function ShowUploadData({ services }) {
 
             <button
               onClick={handleDelete}
-              disabled={confirmName !== selectedFile.name}
+              disabled={confirmName !== selectedFile.name || deleting}
               className="w-full mt-4 cursor-pointer bg-red-500 disabled:bg-zinc-700 text-white py-3 rounded"
             >
-              Delete File
+              {deleting ? "Deleting..." : "Delete File"}
             </button>
           </div>
         </div>

@@ -35,12 +35,39 @@ export default function Login() {
     navigate("/");
   };
 
+  // Call the backend to initialize user data if it doesn't exist
+  const initializeUserBackend = async (user, displayName) => {
+    try {
+      const token = await user.getIdToken();
+      const backendUrl = import.meta.env.VITE_NODE_SERVER_URL || "http://localhost:3000";
+      
+      const response = await fetch(`${backendUrl}/api/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: displayName || "User",
+          email: user.email
+        })
+      });
+
+      if (!response.ok) {
+        console.error("Backend login initialization failed:", await response.text());
+      }
+    } catch (err) {
+      console.error("Backend login initialization error:", err);
+    }
+  };
+
   // Google Login
   const handleGoogle = async () => {
     setLoading(true);
     setError("");
     try {
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+      await initializeUserBackend(result.user, result.user.displayName);
       navigate("/app");
     } catch (err) {
       setError(err.message);
@@ -53,7 +80,8 @@ export default function Login() {
     setLoading(true);
     setError("");
     try {
-      await signInWithPopup(auth, githubProvider);
+      const result = await signInWithPopup(auth, githubProvider);
+      await initializeUserBackend(result.user, result.user.displayName);
       navigate("/app");
     } catch (err) {
       setError(err.message);
@@ -72,7 +100,8 @@ export default function Login() {
     setLoading(true);
     setError("");
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      await initializeUserBackend(result.user, null);
       navigate("/app");
     } catch (err) {
       setError(err.message);
