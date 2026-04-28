@@ -14,6 +14,8 @@ import UploadPage from "./pages/Upload";
 import PricingPage from "./pages/PricingPage";
 import ProfilePage from "./pages/ProfilePage";
 import IntegrationsPage from "./pages/IntegrationsPage";
+import SettingsPage from "./pages/SettingsPage";
+import FeedbackPage from "./pages/FeedbackPage";
 
 
 import ProtectedRoute from "./utils/ProtectedRoute.jsx";  
@@ -38,6 +40,8 @@ const router = createBrowserRouter([
       { path: "billing", element: <PricingPage /> },
       { path: "profile", element: <ProfilePage /> },
       { path: "integrations", element: <IntegrationsPage /> },
+      { path: "settings", element: <SettingsPage /> },
+      { path: "feedback", element: <FeedbackPage /> },
       { path: "*", element: <NotFoundPage /> }
     ]
   }

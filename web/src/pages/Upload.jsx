@@ -83,7 +83,7 @@ export default function UploadPage() {
                 <button
                   onClick={() => fileInputRef.current.click()}
                   disabled={uploading}
-                  className="bg-white text-black px-4 py-2 rounded flex items-center gap-2 font-medium hover:bg-zinc-200 disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="bg-white text-black cursor-pointer px-4 py-2 rounded flex items-center gap-2 font-medium hover:bg-zinc-200 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {uploading ? <LoaderCircle size={18} className="animate-spin" /> : <Upload size={18} />}
                   {uploading ? "Uploading..." : "Upload File"}

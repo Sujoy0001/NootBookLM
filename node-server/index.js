@@ -105,8 +105,7 @@ const defaultDashboardData = {
     { name: "Thu", calls: 0 }, { name: "Fri", calls: 0 }, { name: "Sat", calls: 0 }, { name: "Sun", calls: 0 }
   ],
   storageChartData: [
-    { name: "Jan", storage: 0 }, { name: "Feb", storage: 0 }, { name: "Mar", storage: 0 },
-    { name: "Apr", storage: 0 }, { name: "May", storage: 0 }, { name: "Jun", storage: 0 }
+    { name: "0 Files", storage: 0, files: 0 }
   ],
   // Raw metrics for easy calculation updates
   rawMetrics: {
@@ -318,6 +317,16 @@ app.post('/api/upload', verifyToken, uploadLimiter, upload.single('file'), async
       currentData.dashboardStats[0].value = `${totalMB} MB`; // Storage
       currentData.dashboardStats[1].value = `${currentData.rawMetrics.totalFiles}`; // Files Count
 
+      // Update storageChartData history
+      if (currentData.storageChartData) {
+        currentData.storageChartData.push({ 
+          name: `${totalMB} MB`, 
+          storage: parseFloat(totalMB), 
+          files: currentData.rawMetrics.totalFiles 
+        });
+        if (currentData.storageChartData.length > 6) currentData.storageChartData.shift();
+      }
+
       return currentData;
     });
 
@@ -376,6 +385,16 @@ app.delete('/api/upload/:docId', verifyToken, async (req, res) => {
       const totalMB = (currentData.rawMetrics.totalBytes / (1024 * 1024)).toFixed(2);
       currentData.dashboardStats[0].value = `${totalMB} MB`;
       currentData.dashboardStats[1].value = `${currentData.rawMetrics.totalFiles}`;
+
+      // Update storageChartData history
+      if (currentData.storageChartData) {
+        currentData.storageChartData.push({ 
+          name: `${totalMB} MB`, 
+          storage: parseFloat(totalMB), 
+          files: currentData.rawMetrics.totalFiles 
+        });
+        if (currentData.storageChartData.length > 6) currentData.storageChartData.shift();
+      }
 
       return currentData;
     });

@@ -10,8 +10,8 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   CartesianGrid,
 } from "recharts";
 
@@ -22,7 +22,17 @@ export default function Dashboard() {
 
   const dashboardStats = data?.dashboardStats || [];
   const apiChartData = data?.apiChartData || [];
-  const storageChartData = data?.storageChartData || [];
+  let storageChartData = data?.storageChartData || [];
+  
+  // Clean up old backend padding for a cleaner UI
+  storageChartData = storageChartData.filter(d => !d.name.includes("0 MB") && !d.name.includes("0.00 MB"));
+  
+  // Ensure chart has a visual starting point (0)
+  if (storageChartData.length > 0 && storageChartData[0].storage > 0) {
+    storageChartData = [{ name: "0 Files", storage: 0, files: 0 }, ...storageChartData];
+  } else if (storageChartData.length === 0) {
+    storageChartData = [{ name: "0 Files", storage: 0, files: 0 }];
+  }
 
   return (
     <div className="h-full w-full px-2 sujoy1">
@@ -68,35 +78,45 @@ export default function Dashboard() {
             <div className="bg-zinc-950 rounded-2xl p-5 border border-white/10 h-87.5">
               <h2 className="text-lg font-semibold mb-4">Total API Calls</h2>
               <ResponsiveContainer width="100%" height="90%">
-                <BarChart data={apiChartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+                <BarChart data={apiChartData} margin={{ top: 20, right: 30, left: -20, bottom: 5 }}>
+                  <defs>
+                    <linearGradient id="colorCalls" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#fff" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#fff" stopOpacity={0.1}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
                   <XAxis 
                     dataKey="name" 
-                    stroke="#888" 
-                    tick={{ fill: '#888' }}
-                    axisLine={{ stroke: '#333' }}
-                    tickLine={{ stroke: '#333' }}
+                    stroke="#666" 
+                    tick={{ fill: '#666', fontSize: 12 }}
+                    axisLine={false}
+                    tickLine={false}
+                    dy={10}
                   />
                   <YAxis 
-                    stroke="#888"
-                    tick={{ fill: '#888' }}
-                    axisLine={{ stroke: '#333' }}
-                    tickLine={{ stroke: '#333' }}
+                    stroke="#666"
+                    tick={{ fill: '#666', fontSize: 12 }}
+                    axisLine={false}
+                    tickLine={false}
+                    dx={-10}
                   />
                   <Tooltip 
+                    cursor={{ fill: 'rgba(255,255,255,0.03)' }}
                     contentStyle={{ 
-                      backgroundColor: '#1a1a1a', 
-                      border: '1px solid #333',
-                      borderRadius: '8px',
-                      color: '#fff'
+                      backgroundColor: '#09090b',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '12px',
+                      color: '#fff',
+                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
                     }}
-                    cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                    itemStyle={{ color: '#fff', fontWeight: '500' }}
                   />
                   <Bar 
                     dataKey="calls" 
-                    fill="#fff" 
-                    radius={[6, 6, 0, 0]}
-                    barSize={40}
+                    fill="url(#colorCalls)" 
+                    radius={[4, 4, 0, 0]}
+                    barSize={28}
                   />
                 </BarChart>
               </ResponsiveContainer>
@@ -105,38 +125,50 @@ export default function Dashboard() {
             <div className="bg-zinc-950 rounded-2xl p-5 border border-white/10 h-87.5">
               <h2 className="text-lg font-semibold mb-4">Storage Used</h2>
               <ResponsiveContainer width="100%" height="90%">
-                <LineChart data={storageChartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+                <AreaChart data={storageChartData} margin={{ top: 20, right: 30, left: -20, bottom: 5 }}>
+                  <defs>
+                    <linearGradient id="colorStorage" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#fff" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#fff" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
                   <XAxis 
                     dataKey="name" 
-                    stroke="#888"
-                    tick={{ fill: '#888' }}
-                    axisLine={{ stroke: '#333' }}
-                    tickLine={{ stroke: '#333' }}
+                    stroke="#666"
+                    tick={{ fill: '#666', fontSize: 12 }}
+                    axisLine={false}
+                    tickLine={false}
+                    dy={10}
                   />
                   <YAxis 
-                    stroke="#888"
-                    tick={{ fill: '#888' }}
-                    axisLine={{ stroke: '#333' }}
-                    tickLine={{ stroke: '#333' }}
+                    stroke="#666"
+                    tick={{ fill: '#666', fontSize: 12 }}
+                    axisLine={false}
+                    tickLine={false}
+                    dx={-10}
                   />
                   <Tooltip 
                     contentStyle={{ 
-                      backgroundColor: '#1a1a1a', 
-                      border: '1px solid #333',
-                      borderRadius: '8px',
-                      color: '#fff'
+                      backgroundColor: '#09090b', 
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '12px',
+                      color: '#fff',
+                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
                     }}
+                    itemStyle={{ color: '#fff', fontWeight: '500' }}
                   />
-                  <Line
+                  <Area
                     type="monotone"
                     dataKey="storage"
+                    name="Storage (MB)"
                     stroke="#fff"
                     strokeWidth={3}
-                    dot={{ fill: '#fff', strokeWidth: 2, r: 4 }}
-                    activeDot={{ r: 6, fill: '#fff' }}
+                    fillOpacity={1} 
+                    fill="url(#colorStorage)"
+                    activeDot={{ r: 6, fill: '#fff', stroke: '#111', strokeWidth: 2 }}
                   />
-                </LineChart>
+                </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>

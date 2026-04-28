@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import { auth } from "../lib/firebase";
+import { auth, db } from "../lib/firebase";
 import { useUserData } from "../context/FirebaseContext";
+import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 
 function maskKey(key) {
   if (!key || typeof key !== 'string') return "";
@@ -143,19 +144,29 @@ export default function IntegrationsPage() {
 
   const handleCreate = async (name) => {
     try {
-      const token = await auth.currentUser.getIdToken();
-      const backendUrl = import.meta.env.VITE_NODE_SERVER_URL || "http://localhost:3000";
+      if (!auth.currentUser) throw new Error("No user logged in");
       
-      const res = await fetch(`${backendUrl}/api/keys`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ name })
-      });
+      const generateRandomText = (length = 10) => {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+          result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+      };
 
-      if (!res.ok) throw new Error("Failed to create key");
+      const newKeyValue = generateRandomText(10) + "-" + auth.currentUser.uid;
+      
+      const newKey = {
+        name: name,
+        value: newKeyValue,
+        createdAt: new Date().toISOString()
+      };
+
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      await updateDoc(userRef, {
+        apiKeys: arrayUnion(newKey)
+      });
 
       setKeyVisible(true);
       setShowCreate(false);
@@ -172,15 +183,17 @@ export default function IntegrationsPage() {
     if (!apiKey) return;
     
     try {
-      const token = await auth.currentUser.getIdToken();
-      const backendUrl = import.meta.env.VITE_NODE_SERVER_URL || "http://localhost:3000";
+      if (!auth.currentUser) throw new Error("No user logged in");
       
-      const res = await fetch(`${backendUrl}/api/keys/${apiKey.value}`, {
-        method: "DELETE",
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-
-      if (!res.ok) throw new Error("Failed to delete key");
+      // Find the exact object in the userData array
+      const keyToDelete = userData.apiKeys.find(k => (k.value || k.key) === apiKey.value);
+      
+      if (keyToDelete) {
+        const userRef = doc(db, "users", auth.currentUser.uid);
+        await updateDoc(userRef, {
+          apiKeys: arrayRemove(keyToDelete)
+        });
+      }
 
       setKeyVisible(false);
       setShowWarning(false);
@@ -302,6 +315,23 @@ export default function IntegrationsPage() {
             <p className="mt-3 px-1 text-[11px] text-[#8487e7]">
               1 / 1 keys used — delete to create a new one.
             </p>
+
+            {/* Documentation Section */}
+            <div className="mt-12 rounded-xl border border-white/10 bg-[#111] p-6">
+              <h2 className="text-xl font-semibold text-white mb-4">How to use your API Key</h2>
+              <p className="text-zinc-400 text-sm mb-4">
+                Use this API key to authenticate requests to the RagEngine RAG Server. Include it in the <code className="bg-white/10 px-1.5 py-0.5 rounded text-white font-mono text-xs">Authorization</code> header of your HTTP requests.
+              </p>
+              
+              <div className="bg-[#0a0a0a] rounded-lg p-4 border border-white/5 overflow-x-auto">
+                <pre className="text-xs text-zinc-300 font-mono leading-relaxed">
+<span className="text-blue-400">curl</span> -X POST https://api.RagEngine.com/v1/chat \
+  -H <span className="text-emerald-400">"Authorization: Bearer YOUR_API_KEY"</span> \
+  -H <span className="text-emerald-400">"Content-Type: application/json"</span> \
+  -d <span className="text-yellow-300">'{'{"query": "Summarize my document"}'}'</span>
+                </pre>
+              </div>
+            </div>
           </div>
         )}
       </div>
