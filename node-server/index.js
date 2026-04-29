@@ -301,7 +301,7 @@ app.post('/api/url', verifyToken, async (req, res) => {
     if (process.env.RAG_BACKEND_URL) {
       try {
         const baseUrl = process.env.RAG_BACKEND_URL.replace(/\/$/, '');
-        const backendUrl = `${baseUrl}/v1/document/url`;
+        const backendUrl = `${baseUrl}/v2/url/uploads`;
         
         const ragResponse = await fetch(backendUrl, {
           method: 'POST',
