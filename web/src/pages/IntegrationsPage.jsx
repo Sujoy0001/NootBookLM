@@ -115,7 +115,7 @@ function DeleteModal({ keyName, onClose, onConfirm }) {
 
 // ── Main Page ─────────────────────────────────────────────────
 export default function IntegrationsPage() {
-  const { data: userData, loading } = useUserData();
+  const { data: userData } = useUserData();
   const [apiKey, setApiKey]       = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
@@ -318,17 +318,43 @@ export default function IntegrationsPage() {
 
             {/* Documentation Section */}
             <div className="mt-12 rounded-xl border border-white/10 bg-[#111] p-6">
-              <h2 className="text-xl font-semibold text-white mb-4">How to use your API Key</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">
+                How to use your API Key
+              </h2>
+
               <p className="text-zinc-400 text-sm mb-4">
-                Use this API key to authenticate requests to the RagEngine RAG Server. Include it in the <code className="bg-white/10 px-1.5 py-0.5 rounded text-white font-mono text-xs">Authorization</code> header of your HTTP requests.
+                Use this API key to authenticate requests to the RagEngine RAG Server.
+                Include it in the{" "}
+                <code className="bg-white/10 px-1.5 py-0.5 rounded text-white font-mono text-xs">
+                  x-api-key
+                </code>{" "}
+                header of your HTTP requests.
               </p>
-              
+
               <div className="bg-[#0a0a0a] rounded-lg p-4 border border-white/5 overflow-x-auto">
-                <pre className="text-xs text-zinc-300 font-mono leading-relaxed">
-<span className="text-blue-400">curl</span> -X POST https://api.RagEngine.com/v1/chat \
-  -H <span className="text-emerald-400">"Authorization: Bearer YOUR_API_KEY"</span> \
-  -H <span className="text-emerald-400">"Content-Type: application/json"</span> \
-  -d <span className="text-yellow-300">'{'{"query": "Summarize my document"}'}'</span>
+                <pre className="text-xs text-zinc-300 font-mono leading-relaxed whitespace-pre-wrap break-all">
+                  <span className="text-blue-400">curl</span>{" "}
+                  <span className="text-yellow-300">
+                    "https://nootbooklm.onrender.com/api/v2/chat/query"
+                  </span>{" "}
+                  \
+                  {"\n"}  -H{" "}
+                  <span className="text-emerald-400">
+                    "x-api-key: YOUR_SECRET_KEY"
+                  </span>{" "}
+                  \
+                  {"\n"}  -H{" "}
+                  <span className="text-emerald-400">
+                    "Content-Type: application/json"
+                  </span>{" "}
+                  \
+                  {"\n"}  -X <span className="text-purple-400">POST</span> \
+                  {"\n"}  -d{" "}
+                  <span className="text-yellow-300">
+                    {`'{
+        "query": "what is your privacy policy?",
+      }'`}
+                  </span>
                 </pre>
               </div>
             </div>
