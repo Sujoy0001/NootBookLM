@@ -224,11 +224,7 @@ async def upload_document(file: UploadFile = File(...), user_id: str = "anonymou
     )
 
 
-@router.post("/document/url")
-async def upload_document_from_url(payload: UrlIngestionRequest):
-    source_url = str(payload.url)
-    user_id = payload.user_id
-
+async def upload_document_from_url_core(user_id: str, source_url: str) -> dict:
     text, firecrawl_response = await _scrape_url_with_firecrawl(source_url)
 
     existing_url = await docs_collection.find_one(
@@ -279,6 +275,21 @@ async def upload_document_from_url(payload: UrlIngestionRequest):
         },
     }
     
+@router.post("/document/url")
+async def upload_document_from_url(payload: UrlIngestionRequest):
+    source_url = str(payload.url)
+    user_id = payload.user_id
+    
+    result = await upload_document_from_url_core(user_id, source_url)
+    
+    return JSONResponse(
+        content={
+            "version": "v1",
+            "data": result
+        }
+    )
+
+
 @router.get("/documents/{user_id}")
 async def list_user_documents(user_id: str):
 
