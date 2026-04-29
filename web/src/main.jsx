@@ -16,6 +16,9 @@ import ProfilePage from "./pages/ProfilePage";
 import IntegrationsPage from "./pages/IntegrationsPage";
 import SettingsPage from "./pages/SettingsPage";
 import FeedbackPage from "./pages/FeedbackPage";
+import SolutionsPage from "./pages/SolutionsPage.jsx";
+import ProductPage from "./pages/ProductPage.jsx";
+import DocsPage from "./pages/DocsPage.jsx";
 
 
 import ProtectedRoute from "./utils/ProtectedRoute.jsx";  
@@ -29,6 +32,9 @@ const router = createBrowserRouter([
       { index: true, element: <LandingPage /> },
       { path: "register", element: <Register /> },
       { path: "login", element: <Login /> },
+      { path: "solutions", element: <SolutionsPage />},
+      { path: "product", element: <ProductPage />},
+      { path: "docs", element: <DocsPage /> }
     ]
   },
   {

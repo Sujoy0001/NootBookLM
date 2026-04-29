@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import Header from "../components/Header";
 
 export default function Openlayout() {
     const location = useLocation();
@@ -11,7 +12,10 @@ export default function Openlayout() {
 
     return (
         <>
-            <Outlet />
+            <Header />
+            <div className="mt-[70px]">
+                 <Outlet />
+            </div>
         </>
     )
 }

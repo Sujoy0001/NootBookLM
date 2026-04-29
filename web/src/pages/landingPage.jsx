@@ -5,8 +5,6 @@ import { Link } from "react-router-dom";
 export default function LandingPage() {
   return (
     <>
-        <Header />
-  
         <section className="relative w-full h-[calc(100vh-72.5px)] bg-black overflow-hidden">
             <div className="absolute inset-0">
                 <GradientBlinds

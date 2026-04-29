@@ -2,7 +2,13 @@ import '../index.css'
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const navLinks = ["Product", "Solutions", "Docs", "Pricing", "Resources"];
+const navLinks = [
+  { name: "Product", path: "/product" },
+  { name: "Solutions", path: "#" },
+  { name: "Docs", path: "/docs" },
+  { name: "Pricing", path: "#" },
+  { name: "Resources", path: "#" }
+];
 
 const LoginIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -23,21 +29,21 @@ const RegisterIcon = () => (
 
 export default function SaasAIHeader() {
   return (
-    <header className="bg-black border-b border-white/20 px-8 py-3 flex items-center justify-between z-90 sujoy1">
+    <header className="bg-black border-b border-white/20 px-8 py-3 flex items-center justify-between z-90 sujoy1 fixed top-0 left-0 right-0 w-full">
       <div className="flex items-center gap-12">
-        <span className="text-white text-4xl font-bold tracking-wide sujoy3">
+        <Link to="/" className="text-white text-4xl font-bold tracking-wide sujoy3">
           RAGENGINE
-        </span>
+        </Link>
 
         <nav className="flex items-center gap-0.5">
           {navLinks.map((link) => (
-            <a
-              key={link}
-              href="#"
+            <Link
+              key={link.name}
+              to={link.path}
               className="text-[#b0b0b0] px-3 py-1.5 rounded-md hover:text-white hover:bg-white/5 transition-colors duration-150 no-underline"
             >
-              {link}
-            </a>
+              {link.name}
+            </Link>
           ))}
         </nav>
       </div>

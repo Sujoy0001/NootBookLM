@@ -2,14 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../lib/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { 
-  User, 
-  ChevronDown, 
-  MessageSquare, 
-  LogOut, 
-  Mail, 
-  Shield, 
-  CheckCircle, 
+import {
+  User,
+  ChevronDown,
+  MessageSquare,
+  LogOut,
+  Mail,
+  Shield,
+  CheckCircle,
   AlertCircle,
   Key,
   Fingerprint
@@ -67,16 +67,16 @@ const Navbar = () => {
   };
 
   // Get user avatar/initial
-  
+
 
   // Format user details for dropdown
   const getUserDetails = () => {
-    if (!user) return { 
-      name: 'Not signed in', 
-      email: 'N/A', 
+    if (!user) return {
+      name: 'Not signed in',
+      email: 'N/A',
       provider: 'N/A',
     };
-    
+
     return {
       name: user.displayName || 'Not provided',
       email: user.email || 'Not provided',
@@ -100,7 +100,7 @@ const Navbar = () => {
     <nav className="bg-[#262626] text-white shadow-xl border-b border-zinc-700 sujoy1">
       <div className="w-full mx-auto px-8">
         <div className="flex items-center justify-between h-16">
-          
+
           <div className="flex items-center space-x-2">
             <h1 className="text-4xl font-bold sujoy3">
               RAGENGINE
@@ -108,15 +108,13 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center space-x-2 sm:space-x-3">
-            
+
             <div className="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-zinc-800 border border-zinc-700">
               <div className="relative flex h-2.5 w-2.5">
-                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                  systemStatus === 'Operational' ? 'bg-green-400' : 'bg-yellow-400' 
-                }`}></span>
-                <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
-                  systemStatus === 'Operational' ? 'bg-green-500' : 'bg-yellow-500'
-                }`}></span>
+                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${systemStatus === 'Operational' ? 'bg-green-400' : 'bg-yellow-400'
+                  }`}></span>
+                <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${systemStatus === 'Operational' ? 'bg-green-500' : 'bg-yellow-500'
+                  }`}></span>
               </div>
               <span className="text-sm font-semibold text-white sujoy1">
                 {systemStatus}
@@ -151,15 +149,14 @@ const Navbar = () => {
                     <span className="hidden sm:inline text-white">Guest</span>
                   </>
                 )}
-                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${
-                  showDropdown ? 'rotate-180' : ''
-                }`} />
+                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showDropdown ? 'rotate-180' : ''
+                  }`} />
               </button>
 
               {/* Dropdown Menu */}
               {showDropdown && (
                 <div className="absolute right-0 mt-2 w-72 bg-zinc-800 rounded-xl shadow-2xl border border-zinc-700 py-2 z-50 animate-fadeIn">
-                  
+
                   {user ? (
                     <>
                       {/* User Details Section */}
@@ -174,7 +171,7 @@ const Navbar = () => {
                             </p>
                           </div>
                         </div>
-                        
+
                         <div className="space-y-2">
                           <div className="flex items-center text-md">
                             <Shield className="w-4 h-4 text-purple-400" />
