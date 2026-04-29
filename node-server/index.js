@@ -98,7 +98,7 @@ const defaultDashboardData = {
     { title: "Storage Used", value: "0 MB", sub: "Out of 5 MB" },
     { title: "Files Uploaded", value: "0", sub: "Total files" },
     { title: "API Calls / Day", value: "0", sub: "Out of 100" },
-    { title: "API Calls / Min", value: "0", sub: "Out of 5" }
+    { title: "API Calls / Min", value: "5 MAX", sub: "with free plan" }
   ],
   apiChartData: [
     { name: "Mon", calls: 0 }, { name: "Tue", calls: 0 }, { name: "Wed", calls: 0 },

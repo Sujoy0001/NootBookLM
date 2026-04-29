@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+from functools import lru_cache
 
 from langchain_chroma import Chroma
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -69,6 +70,7 @@ def format_docs(docs):
 
 
 
+@lru_cache(maxsize=128)
 def get_user_vectorstore(user_id: str):
     """
     Create Chroma Cloud instance for specific user collection
@@ -91,7 +93,7 @@ async def generate_answer(user_id: str, query: str):
 
     retriever = db.as_retriever(search_kwargs={"k": 3})
 
-    docs = retriever.invoke(query)
+    docs = await retriever.ainvoke(query)
     context = format_docs(docs)
 
 
