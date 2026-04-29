@@ -119,7 +119,19 @@ export default function ShowUploadData({ services }) {
             >
               <div className="col-span-4 flex italic items-center gap-3">
                 <Globe className="text-zinc-500 w-4 h-4" />
-                <span>{service.name}</span>
+                {service.url ? (
+                  <a
+                    href={service.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline hover:text-blue-400 cursor-pointer truncate max-w-[200px]"
+                    title={service.name}
+                  >
+                    {service.name}
+                  </a>
+                ) : (
+                  <span className="truncate max-w-[200px]" title={service.name}>{service.name}</span>
+                )}
               </div>
 
               <div className="col-span-2 font-bold">

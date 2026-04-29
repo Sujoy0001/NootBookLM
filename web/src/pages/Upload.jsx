@@ -56,6 +56,7 @@ export default function UploadPage() {
   const uploadedDocs = rawDocs.map((doc) => ({
     id: doc.id,
     name: doc.filename || "Unknown File",
+    url: doc.url || null,
     ext: doc.filename ? doc.filename.split('.').pop() : "unknown",
     status: doc.status === 'processed' ? 'Deployed' : (doc.status === 'processing' ? 'Processing' : 'Failed'),
     size: doc.sizeBytes ? (doc.sizeBytes / (1024 * 1024)).toFixed(1) + " MB" : "0 MB",

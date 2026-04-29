@@ -279,7 +279,34 @@ app.post('/api/upload', verifyToken, uploadLimiter, upload.single('file'), async
       }
     }
 
-    // 2. Upload to ImageKit
+    // 2. Upload to RAG Backend
+    if (process.env.RAG_BACKEND_URL) {
+      try {
+        const baseUrl = process.env.RAG_BACKEND_URL.replace(/\/$/, '');
+        const backendUrl = new URL(`${baseUrl}/v2/document/uploads`);
+        backendUrl.searchParams.set('user_id', uid);
+        
+        const formData = new FormData();
+        const blob = new Blob([req.file.buffer], { type: req.file.mimetype });
+        formData.append('file', blob, req.file.originalname);
+
+        const ragResponse = await fetch(backendUrl.toString(), {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!ragResponse.ok) {
+          const errorText = await ragResponse.text();
+          console.error("RAG Backend error:", errorText);
+          return res.status(500).json({ error: 'Failed to upload document to RAG backend.' });
+        }
+      } catch (err) {
+        console.error("Error communicating with RAG Backend:", err);
+        return res.status(500).json({ error: 'Failed to communicate with RAG backend.' });
+      }
+    }
+
+    // 3. Upload to ImageKit
     const uploadResponse = await imagekit.upload({
       file: req.file.buffer,
       fileName: req.file.originalname,
