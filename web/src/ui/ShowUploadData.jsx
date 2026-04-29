@@ -11,23 +11,23 @@ import { auth } from "../lib/firebase";
 
 export default function ShowUploadData({ services }) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeTab, setActiveTab] = useState("Active");
+  const [activeTab, setActiveTab] = useState("Files");
   const [selectedFile, setSelectedFile] = useState(null);
   const [confirmName, setConfirmName] = useState("");
 
   const counts = {
-    Active: services.filter((s) => s.type === "active").length,
-    Failed: services.filter((s) => s.type === "suspended").length,
+    Files: services.filter((s) => s.category === "file").length,
+    URLs: services.filter((s) => s.category === "url").length,
     All: services.length,
   };
 
   const filteredServices = useMemo(() => {
     let filtered = services;
 
-    if (activeTab === "Active")
-      filtered = filtered.filter((s) => s.type === "active");
-    if (activeTab === "Failed")
-      filtered = filtered.filter((s) => s.type === "suspended");
+    if (activeTab === "Files")
+      filtered = filtered.filter((s) => s.category === "file");
+    if (activeTab === "URLs")
+      filtered = filtered.filter((s) => s.category === "url");
 
     if (searchTerm) {
       filtered = filtered.filter((s) =>
@@ -47,7 +47,11 @@ export default function ShowUploadData({ services }) {
         const token = await auth.currentUser.getIdToken();
         const backendUrl = import.meta.env.VITE_NODE_SERVER_URL || "http://localhost:3000";
         
-        const response = await fetch(`${backendUrl}/api/upload/${selectedFile.id}`, {
+        const endpoint = selectedFile.category === "url" 
+          ? `${backendUrl}/api/url/${selectedFile.id}`
+          : `${backendUrl}/api/upload/${selectedFile.id}`;
+          
+        const response = await fetch(endpoint, {
           method: "DELETE",
           headers: {
             "Authorization": `Bearer ${token}`
@@ -73,7 +77,7 @@ export default function ShowUploadData({ services }) {
       <h2 className="text-xl font-bold mb-4 text-white">Uploaded Documents</h2>
 
       <div className="flex border border-zinc-800 w-fit mb-6 bg-[#0a0a0a]">
-        {["Active", "Failed", "All"].map((tab, idx) => (
+        {["Files", "URLs", "All"].map((tab, idx) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}

@@ -134,7 +134,7 @@ export default function Dashboard() {
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
                   <XAxis 
-                    dataKey="name" 
+                    dataKey="files" 
                     stroke="#666"
                     tick={{ fill: '#666', fontSize: 12 }}
                     axisLine={false}

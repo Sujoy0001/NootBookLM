@@ -1,13 +1,16 @@
 import React, { useRef, useState } from "react";
-import { Upload, LoaderCircle } from "lucide-react";
+import { Upload, LoaderCircle, Link as LinkIcon } from "lucide-react";
 import ShowUploadData from "../ui/ShowUploadData";
-import { useUploadDocs } from "../context/FirebaseContext";
+import { useUploadDocs, useUploadUrls } from "../context/FirebaseContext";
 import { auth } from "../lib/firebase";
 
 export default function UploadPage() {
   const fileInputRef = useRef(null);
-  const { data: rawDocs, loading } = useUploadDocs();
+  const { data: rawDocs, loading: docsLoading } = useUploadDocs();
+  const { data: rawUrls, loading: urlsLoading } = useUploadUrls();
   const [uploading, setUploading] = useState(false);
+  const [uploadingUrl, setUploadingUrl] = useState(false);
+  const [urlInput, setUrlInput] = useState("");
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
@@ -52,17 +55,66 @@ export default function UploadPage() {
     }
   };
 
-  // Map the raw Firestore documents to the format expected by ShowUploadData
+  const handleUrlSubmit = async (e) => {
+    e.preventDefault();
+    if (!urlInput.trim()) return;
+    
+    if (!auth.currentUser) {
+      alert("You must be logged in to upload URLs.");
+      return;
+    }
+
+    setUploadingUrl(true);
+    try {
+      const token = await auth.currentUser.getIdToken();
+      const backendUrl = import.meta.env.VITE_NODE_SERVER_URL || "http://localhost:3000";
+      
+      const response = await fetch(`${backendUrl}/api/url`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ url: urlInput.trim() })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "URL upload failed");
+      }
+
+      setUrlInput("");
+    } catch (err) {
+      console.error("URL Upload Error:", err);
+      alert("Error uploading URL: " + err.message);
+    } finally {
+      setUploadingUrl(false);
+    }
+  };
+
   const uploadedDocs = rawDocs.map((doc) => ({
     id: doc.id,
-    name: doc.filename || "Unknown File",
+    name: doc.originalName || doc.filename || "Unknown File",
     url: doc.url || null,
     ext: doc.filename ? doc.filename.split('.').pop() : "unknown",
     status: doc.status === 'processed' ? 'Deployed' : (doc.status === 'processing' ? 'Processing' : 'Failed'),
     size: doc.sizeBytes ? (doc.sizeBytes / (1024 * 1024)).toFixed(1) + " MB" : "0 MB",
     date: doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString() : "Unknown date",
-    type: doc.status === 'processed' ? 'active' : 'suspended'
+    category: "file"
   }));
+
+  const uploadedUrls = rawUrls.map((doc) => ({
+    id: doc.id,
+    name: doc.filename || doc.title || doc.url || "Unknown URL",
+    url: doc.url || null,
+    ext: "link",
+    status: doc.status === 'processed' ? 'Deployed' : (doc.status === 'processing' ? 'Processing' : 'Failed'),
+    size: "-",
+    date: doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString() : "Unknown date",
+    category: "url"
+  }));
+
+  const allData = [...uploadedDocs, ...uploadedUrls].sort((a, b) => new Date(b.date) - new Date(a.date));
 
   return (
     <div className="min-h-screen px-2 sujoy1">
@@ -90,6 +142,28 @@ export default function UploadPage() {
                   {uploading ? "Uploading..." : "Upload File"}
                 </button>
               </div>
+
+              <div className="mt-8 pt-6 border-t border-zinc-800">
+                <h3 className="text-lg font-medium mb-3">Or Upload via URL</h3>
+                <form onSubmit={handleUrlSubmit} className="flex gap-3">
+                  <input
+                    type="url"
+                    value={urlInput}
+                    onChange={(e) => setUrlInput(e.target.value)}
+                    placeholder="https://example.com"
+                    className="flex-1 bg-zinc-900 border border-zinc-700 rounded px-4 py-2 text-white outline-none focus:border-zinc-500"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    disabled={uploadingUrl || !urlInput.trim()}
+                    className="bg-zinc-800 text-white cursor-pointer px-4 py-2 rounded flex items-center gap-2 font-medium hover:bg-zinc-700 disabled:opacity-70 disabled:cursor-not-allowed"
+                  >
+                    {uploadingUrl ? <LoaderCircle size={18} className="animate-spin" /> : <LinkIcon size={18} />}
+                    Submit
+                  </button>
+                </form>
+              </div>
             </div>
 
             <div className="hidden md:flex md:w-1/2 border-l border-zinc-800 bg-zinc-950 items-center justify-center p-4">
@@ -116,10 +190,10 @@ export default function UploadPage() {
           />
         </div>
 
-        {loading ? (
+        {docsLoading || urlsLoading ? (
           <p className="text-zinc-400 text-center mt-8">Loading documents...</p>
         ) : (
-          <ShowUploadData services={uploadedDocs} />
+          <ShowUploadData services={allData} />
         )}
       </div>
     </div>

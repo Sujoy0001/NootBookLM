@@ -178,13 +178,34 @@ app.delete('/api/auth/account', verifyToken, async (req, res) => {
       await batch.commit();
     }
 
-    // 2. Delete user's RTDB dashboard
+    // 2. Fetch and delete all uploaded URLs from Firestore
+    const urlsSnapshot = await db.collection('user_url').where('userId', '==', uid).get();
+    const urlBatch = db.batch();
+    for (const doc of urlsSnapshot.docs) {
+      urlBatch.delete(doc.ref);
+    }
+    if (!urlsSnapshot.empty) {
+      await urlBatch.commit();
+    }
+
+    // 3. Delete user data from RAG backend
+    if (process.env.RAG_BACKEND_URL) {
+      try {
+        const baseUrl = process.env.RAG_BACKEND_URL.replace(/\/$/, '');
+        const backendUrl = `${baseUrl}/v1/user/delete/${uid}`;
+        await fetch(backendUrl, { method: 'DELETE' });
+      } catch (err) {
+        console.error("Failed to delete user from RAG backend:", err);
+      }
+    }
+
+    // 4. Delete user's RTDB dashboard
     await rtdb.ref(`users/${uid}`).remove();
 
-    // 3. Delete user from Firestore 'users' collection
+    // 5. Delete user from Firestore 'users' collection
     await db.collection('users').doc(uid).delete();
 
-    // 4. Delete user from Firebase Auth
+    // 6. Delete user from Firebase Auth
     await admin.auth().deleteUser(uid);
 
     return res.status(200).json({ message: "Account completely deleted successfully." });
@@ -249,6 +270,214 @@ app.delete('/api/keys/:keyValue', verifyToken, async (req, res) => {
   } catch (error) {
     console.error("Delete Key Error:", error);
     return res.status(500).json({ error: "Failed to delete API Key." });
+  }
+});
+
+// ---------------------------------------------------------
+// Route: Upload URL
+// ---------------------------------------------------------
+app.post('/api/url', verifyToken, async (req, res) => {
+  try {
+    const uid = req.user.uid;
+    const { url } = req.body;
+
+    if (!url) return res.status(400).json({ error: 'No URL provided' });
+
+    // 0. Check User Plan & URL Limits
+    const userDoc = await db.collection('users').doc(uid).get();
+    if (!userDoc.exists) return res.status(404).json({ error: 'User not found' });
+    
+    const userData = userDoc.data();
+    if (userData.plan === 'free') {
+      const urlDocsSnap = await db.collection('user_url').where('userId', '==', uid).get();
+      if (urlDocsSnap.size >= 2) {
+        return res.status(403).json({ 
+          error: 'URL limit exceeded. Free plan allows up to 2 URLs. Please upgrade your plan.' 
+        });
+      }
+    }
+
+    // 1. Upload to RAG Backend
+    if (process.env.RAG_BACKEND_URL) {
+      try {
+        const baseUrl = process.env.RAG_BACKEND_URL.replace(/\/$/, '');
+        const backendUrl = `${baseUrl}/v1/document/url`;
+        
+        const ragResponse = await fetch(backendUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            url: url,
+            user_id: uid
+          })
+        });
+
+        let ragData;
+        if (!ragResponse.ok) {
+          let errorMsg = 'Failed to process URL in RAG backend.';
+          try {
+            const errorJson = await ragResponse.json();
+            if (errorJson.detail) errorMsg = errorJson.detail;
+          } catch (e) {}
+          console.error("RAG Backend error:", errorMsg);
+          return res.status(ragResponse.status || 500).json({ error: errorMsg });
+        } else {
+          ragData = await ragResponse.json();
+        }
+      } catch (err) {
+        console.error("Error communicating with RAG Backend:", err);
+        return res.status(500).json({ error: 'Failed to communicate with RAG backend.' });
+      }
+    } else {
+      return res.status(500).json({ error: 'RAG Backend URL not configured.' });
+    }
+
+    const fileInfo = (typeof ragData !== 'undefined' && ragData.file_info) ? ragData.file_info : {};
+
+    // 2. Save metadata to Firestore
+    const docData = {
+      userId: uid,
+      url: url,
+      filename: fileInfo.filename || url,
+      title: fileInfo.title || url,
+      uploadedAt: new Date().toISOString(),
+      status: "processed",
+      type: "url"
+    };
+
+    const docRef = await db.collection('user_url').add(docData);
+
+    // 3. Update RTDB Metrics
+    const userDbRef = rtdb.ref(`users/${uid}/dashboard`);
+    userDbRef.transaction((currentData) => {
+      if (currentData === null) return defaultDashboardData; // Fallback if no data
+      
+      // Update raw metrics
+      if(!currentData.rawMetrics) currentData.rawMetrics = { totalBytes: 0, totalFiles: 0 };
+      currentData.rawMetrics.totalFiles += 1;
+
+      // Update UI stats
+      currentData.dashboardStats[1].value = `${currentData.rawMetrics.totalFiles}`; // Files Count
+
+      // Update storageChartData history
+      if (currentData.storageChartData) {
+        const lastEntry = currentData.storageChartData[currentData.storageChartData.length - 1];
+        const lastStorage = lastEntry ? lastEntry.storage : 0;
+        const lastStorageName = lastEntry ? lastEntry.name : "0 MB";
+
+        currentData.storageChartData.push({ 
+          name: lastStorageName, 
+          storage: lastStorage, 
+          files: currentData.rawMetrics.totalFiles 
+        });
+        if (currentData.storageChartData.length > 6) currentData.storageChartData.shift();
+      }
+
+      return currentData;
+    });
+
+    return res.status(200).json({
+      message: 'URL upload successful',
+      docId: docRef.id,
+      data: docData
+    });
+  } catch (error) {
+    console.error('URL Upload error:', error);
+    return res.status(500).json({ error: 'Failed to process URL upload' });
+  }
+});
+
+function buildDocumentNameFromUrl(sourceUrl) {
+  if (!sourceUrl.startsWith('http')) return sourceUrl;
+  try {
+    const parsed = new URL(sourceUrl);
+    const host = parsed.host.replace(/\./g, '_') || 'page';
+    let pathPart = parsed.pathname.replace(/^\/|\/$/g, '').replace(/\//g, '_');
+    if (!pathPart) pathPart = 'root';
+    return `${host}_${pathPart}.html`;
+  } catch (e) {
+    return sourceUrl;
+  }
+}
+
+// ---------------------------------------------------------
+// Route: Delete URL
+// ---------------------------------------------------------
+app.delete('/api/url/:docId', verifyToken, async (req, res) => {
+  try {
+    const uid = req.user.uid;
+    const docId = req.params.docId;
+
+    // 1. Get doc from Firestore to ensure ownership
+    const docRef = db.collection('user_url').doc(docId);
+    const docSnap = await docRef.get();
+
+    if (!docSnap.exists) {
+      return res.status(404).json({ error: "Document not found" });
+    }
+
+    const docData = docSnap.data();
+    if (docData.userId !== uid) {
+      return res.status(403).json({ error: "Unauthorized to delete this file" });
+    }
+
+    // 2. Delete from RAG backend if filename exists
+    let fileNameToDelete = docData.filename || docData.originalName;
+    if (fileNameToDelete) {
+      fileNameToDelete = buildDocumentNameFromUrl(fileNameToDelete);
+    }
+    
+    if (fileNameToDelete && process.env.RAG_BACKEND_URL) {
+      try {
+        const baseUrl = process.env.RAG_BACKEND_URL.replace(/\/$/, '');
+        const backendUrl = `${baseUrl}/v1/document/${uid}/${encodeURIComponent(fileNameToDelete)}`;
+        console.log(`Sending DELETE request to RAG: ${backendUrl}`);
+        const response = await fetch(backendUrl, { method: 'DELETE' });
+        if (!response.ok) {
+          console.error("RAG backend delete failed with status:", response.status, await response.text());
+        } else {
+          console.log("RAG backend delete success!");
+        }
+      } catch (err) {
+        console.error("Failed to delete from RAG backend:", err);
+      }
+    }
+
+    // 3. Delete from Firestore
+    await docRef.delete();
+
+    // 4. Update RTDB Metrics
+    const userDbRef = rtdb.ref(`users/${uid}/dashboard`);
+    userDbRef.transaction((currentData) => {
+      if (currentData === null || !currentData.rawMetrics) return currentData;
+      
+      currentData.rawMetrics.totalFiles = Math.max(0, currentData.rawMetrics.totalFiles - 1);
+
+      currentData.dashboardStats[1].value = `${currentData.rawMetrics.totalFiles}`;
+
+      // Update storageChartData history
+      if (currentData.storageChartData) {
+        const lastEntry = currentData.storageChartData[currentData.storageChartData.length - 1];
+        const lastStorage = lastEntry ? lastEntry.storage : 0;
+        const lastStorageName = lastEntry ? lastEntry.name : "0 MB";
+
+        currentData.storageChartData.push({ 
+          name: lastStorageName, 
+          storage: lastStorage, 
+          files: currentData.rawMetrics.totalFiles 
+        });
+        if (currentData.storageChartData.length > 6) currentData.storageChartData.shift();
+      }
+
+      return currentData;
+    });
+
+    return res.status(200).json({ message: "URL deleted successfully" });
+  } catch (error) {
+    console.error("URL Delete Error:", error);
+    return res.status(500).json({ error: "Failed to delete URL" });
   }
 });
 
@@ -395,6 +624,24 @@ app.delete('/api/upload/:docId', verifyToken, async (req, res) => {
         await imagekit.deleteFile(docData.fileId);
       } catch (ikError) {
         console.error("ImageKit Delete Error (proceeding anyway):", ikError);
+      }
+    }
+
+    // 2.5 Delete from RAG backend
+    const fileNameToDelete = docData.originalName || docData.filename;
+    if (fileNameToDelete && process.env.RAG_BACKEND_URL) {
+      try {
+        const baseUrl = process.env.RAG_BACKEND_URL.replace(/\/$/, '');
+        const backendUrl = `${baseUrl}/v1/document/${uid}/${encodeURIComponent(fileNameToDelete)}`;
+        console.log(`Sending DELETE request to RAG: ${backendUrl}`);
+        const response = await fetch(backendUrl, { method: 'DELETE' });
+        if (!response.ok) {
+          console.error("RAG backend delete failed with status:", response.status, await response.text());
+        } else {
+          console.log("RAG backend delete success!");
+        }
+      } catch (err) {
+        console.error("Failed to delete document from RAG backend:", err);
       }
     }
 

@@ -10,12 +10,13 @@ service cloud.firestore {
 
     // Uploaded Docs Collection
     match /uploaded_docs/{docId} {
-      // 1. Web Frontend: Only the owner can read their own documents
       allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
-      
-      // 2. Node Backend: Since the Node server uses the Web SDK and is NOT logged in, 
-      // we MUST allow unauthenticated creates. 
-      // SECURITY WARNING: Anyone on the internet can create a document here.
+      allow create: if true; 
+    }
+
+    // User URLs Collection
+    match /user_url/{docId} {
+      allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
       allow create: if true; 
     }
   }

@@ -10,6 +10,7 @@ export const FirebaseProvider = ({ children }) => {
   const [dashboardData, setDashboardData] = useState({ data: null, loading: true });
   const [userData, setUserData] = useState({ data: null, loading: true });
   const [docsData, setDocsData] = useState({ data: [], loading: true });
+  const [urlsData, setUrlsData] = useState({ data: [], loading: true });
 
   useEffect(() => {
     // Listen for authentication state changes
@@ -50,17 +51,32 @@ export const FirebaseProvider = ({ children }) => {
           setDocsData({ data: [], loading: false });
         });
 
+        // 4. Firestore for User URLs
+        const urlsQuery = query(collection(db, "user_url"), where("userId", "==", user.uid));
+        const unsubscribeUrls = onSnapshot(urlsQuery, (querySnapshot) => {
+          const urls = [];
+          querySnapshot.forEach((doc) => {
+            urls.push({ id: doc.id, ...doc.data() });
+          });
+          setUrlsData({ data: urls, loading: false });
+        }, (error) => {
+          console.error("Firestore URLs Error:", error);
+          setUrlsData({ data: [], loading: false });
+        });
+
         // Cleanup subscriptions when auth state changes or unmounts
         return () => {
           unsubscribeDashboard();
           unsubscribeUser();
           unsubscribeDocs();
+          unsubscribeUrls();
         };
       } else {
         // No user is signed in
         setDashboardData({ data: null, loading: false });
         setUserData({ data: null, loading: false });
         setDocsData({ data: [], loading: false });
+        setUrlsData({ data: [], loading: false });
       }
     });
 
@@ -69,7 +85,7 @@ export const FirebaseProvider = ({ children }) => {
   }, []);
 
   return (
-    <FirebaseContext.Provider value={{ dashboard: dashboardData, user: userData, docs: docsData }}>
+    <FirebaseContext.Provider value={{ dashboard: dashboardData, user: userData, docs: docsData, urls: urlsData }}>
       {children}
     </FirebaseContext.Provider>
   );
@@ -88,4 +104,9 @@ export const useUserData = () => {
 export const useUploadDocs = () => {
   const context = useContext(FirebaseContext);
   return context ? context.docs : { data: [], loading: true };
+};
+
+export const useUploadUrls = () => {
+  const context = useContext(FirebaseContext);
+  return context ? context.urls : { data: [], loading: true };
 };
