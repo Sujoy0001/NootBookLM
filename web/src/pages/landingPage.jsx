@@ -23,15 +23,14 @@ export default function LandingPage() {
                 />
             </div>
 
-            <div className="absolute bottom-0 left-0 z-10 p-10 max-w-4xl flex flex-col sujoy1">
+            <div className="absolute bottom-0 left-0 z-10 p-10 max-w-5xl flex flex-col sujoy1">
 
                 <p className="text-sm text-gray-300 mb-4 tracking-widest uppercase">
-                    A Modern AI Platform
+                  Turn Your Documents Into a Smart Chatbot — Instantly
                 </p>
 
-                <h1 className="text-white text-4xl md:text-6xl font-semibold leading-tight max-w-3xl">
-                    Instant RAG Infrastructure <br />
-                    for Teams and Applications
+                <h1 className="text-white text-4xl md:text-6xl font-bold leading-tight w-full">
+                    The Ultimate RAG Solution  <br /> for Effortless Chatbot Creation
                 </h1>
 
                 <div className="mt-8 flex gap-4">

@@ -8,7 +8,7 @@ export default function DocsPage() {
       <div className="flex-grow flex flex-col md:flex-row max-w-7xl mx-auto w-full">
         {/* Sidebar */}
         <aside className="w-full md:w-64 border-r border-zinc-800 p-6 hidden md:block">
-          <nav className="sticky top-24 space-y-8">
+          <nav className="sticky top-8 space-y-8">
             <div>
               <h4 className="font-bold text-zinc-400 mb-4 uppercase tracking-wider text-sm">Getting Started</h4>
               <ul className="space-y-3">

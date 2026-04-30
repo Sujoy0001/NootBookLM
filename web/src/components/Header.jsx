@@ -29,7 +29,7 @@ const RegisterIcon = () => (
 
 export default function SaasAIHeader() {
   return (
-    <header className="bg-black border-b border-white/20 px-8 py-3 flex items-center justify-between z-90 sujoy1 fixed top-0 left-0 right-0 w-full">
+    <header className="bg-black border-b border-white/20 px-8 py-3 flex items-center justify-between z-90 sujoy1 sticky top-0 w-full">
       <div className="flex items-center gap-12">
         <Link to="/" className="text-white text-4xl font-bold tracking-wide sujoy3">
           RAGENGINE

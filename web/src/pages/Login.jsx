@@ -30,10 +30,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Navigate back to home
-  const handleBackToHome = () => {
-    navigate("/");
-  };
 
   // Call the backend to initialize user data if it doesn't exist
   const initializeUserBackend = async (user, displayName) => {
@@ -110,20 +106,14 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-black text-white sujoy1">
+    <div className="h-full w-full bg-black text-white sujoy1">
       
-      <div className="flex items-center justify-between min-h-screen">
-        <RegisterUI />
+      <div className="flex flex-row justify-between">
+        <div className="w-full max-w-xl">
+          <RegisterUI />
+        </div>
         
-        <div className="flex flex-col items-center justify-center w-full px-4">
-          <button
-            onClick={handleBackToHome}
-            className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/15 rounded cursor-pointer transition-all duration-200 backdrop-blur-sm"
-            aria-label="Go back to home"
-          >
-            <ArrowLeft size={20} />
-            <span className="text-sm font-medium">Back to Home</span>
-          </button>
+        <div className="flex flex-col items-center justify-center w-full px-4 py-8">
 
           <div className="w-full text-center mb-8">
             <h1 className="text-4xl font-bold mb-2">Log in to Ragengine</h1>
