@@ -23,7 +23,7 @@ export default function LandingPage() {
                 />
             </div>
 
-            <div className="absolute bottom-0 left-0 z-10 p-10 max-w-5xl flex flex-col sujoy1">
+            <div className="absolute bottom-0 left-0 z-10 p-3 md:p-10 max-w-5xl flex flex-col sujoy1">
 
                 <p className="text-sm text-gray-300 mb-4 tracking-widest uppercase">
                   Turn Your Documents Into a Smart Chatbot — Instantly

@@ -29,13 +29,13 @@ const RegisterIcon = () => (
 
 export default function SaasAIHeader() {
   return (
-    <header className="bg-black border-b border-white/20 px-8 py-3 flex items-center justify-between z-90 sujoy1 sticky top-0 w-full">
+    <header className="bg-black border-b border-white/20 px-3 md:px-8 py-3 flex items-center justify-between z-90 sujoy1 sticky top-0 w-full">
       <div className="flex items-center gap-12">
         <Link to="/" className="text-white text-4xl font-bold tracking-wide sujoy3">
           RAGENGINE
         </Link>
 
-        <nav className="flex items-center gap-0.5">
+        <nav className="hidden md:flex items-center gap-0.5">
           {navLinks.map((link) => (
             <Link
               key={link.name}
@@ -53,7 +53,7 @@ export default function SaasAIHeader() {
           Log in
         </Link>
 
-        <Link to="/register" className="flex items-center text-black text-md font-medium px-7.5 py-2.5 rounded-full bg-white hover:bg-gray-200 transition-colors duration-150 cursor-pointer">
+        <Link to="/register" className="hidden md:flex items-center text-black text-md font-medium px-7.5 py-2.5 rounded-full bg-white hover:bg-gray-200 transition-colors duration-150 cursor-pointer">
           Register
         </Link>
       </div>

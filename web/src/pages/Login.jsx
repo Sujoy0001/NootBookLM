@@ -109,7 +109,7 @@ export default function Login() {
     <div className="h-full w-full bg-black text-white sujoy1">
       
       <div className="flex flex-row justify-between">
-        <div className="w-full max-w-xl">
+        <div className="hidden lg:block w-full max-w-xl">
           <RegisterUI />
         </div>
         

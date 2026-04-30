@@ -98,8 +98,8 @@ const Navbar = () => {
 
   return (
     <nav className="bg-[#262626] text-white shadow-xl border-b border-zinc-700 sujoy1">
-      <div className="w-full mx-auto px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className="w-full mx-auto px-3 md:px-8">
+        <div className="flex items-center justify-between gap-8 h-16">
 
           <div className="flex items-center space-x-2">
             <h1 className="text-4xl font-bold sujoy3">
@@ -109,7 +109,7 @@ const Navbar = () => {
 
           <div className="flex items-center space-x-2 sm:space-x-3">
 
-            <div className="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-zinc-800 border border-zinc-700">
+            <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-full bg-zinc-800 border border-zinc-700">
               <div className="relative flex h-2.5 w-2.5">
                 <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${systemStatus === 'Operational' ? 'bg-green-400' : 'bg-yellow-400'
                   }`}></span>
@@ -124,7 +124,7 @@ const Navbar = () => {
             {/* Feedback Button */}
             <button
               onClick={openFeedbackForm}
-              className="flex items-center cursor-pointer space-x-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium text-white bg-zinc-800 hover:bg-zinc-700 transition-all duration-200 border border-zinc-700 hover:border-zinc-600 hover:shadow-lg group"
+              className="hidden md:flex items-center cursor-pointer space-x-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium text-white bg-zinc-800 hover:bg-zinc-700 transition-all duration-200 border border-zinc-700 hover:border-zinc-600 hover:shadow-lg group"
               title="Open Google Feedback Form"
             >
               <MessageSquare className="w-4 h-4 group-hover:scale-110 transition-transform" />
