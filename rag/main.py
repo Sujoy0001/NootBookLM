@@ -1,9 +1,11 @@
 from fastapi import FastAPI
+import os
 from app.routes.v1 import upload
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from app.utils.limiter import limiter
+from app.utils.logging_config import logger
 
 from app.routes.v2 import upload_route, url_route, ans_route
 from app.routes.v1 import ans, delete, rag
@@ -13,9 +15,11 @@ app = FastAPI(title="Rag server", description="A FastAPI server for Rag integrat
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -24,6 +28,10 @@ app.add_middleware(
 @app.get("/")
 async def root():
     return {"message": "Welcome to the Rag FastAPI Integration!"}
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "version": "2.3.0"}
 
 app.include_router(upload.router, prefix="/api/v1", tags=["Document Upload"])
 
