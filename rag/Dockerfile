@@ -33,5 +33,5 @@ USER appuser
 # Expose the port
 EXPOSE 8000
 
-# Run gunicorn with uvicorn workers
-CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "120", "main:app"]
+# Run gunicorn with uvicorn workers, using the PORT environment variable
+CMD ["sh", "-c", "gunicorn -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT --workers 2 --timeout 120 main:app"]
