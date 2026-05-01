@@ -9,6 +9,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
 from ..utils.jina import JinaEmbeddings
+from ..utils.api_selete import get_gemini_api_key
 # from database.mongodb import chat_collection
 
 load_dotenv()
@@ -26,7 +27,7 @@ embeddings = JinaEmbeddings(
 
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
-    google_api_key=os.getenv("GEMINI_API_KEY"),
+    google_api_key=get_gemini_api_key(),
     temperature=0.3
 )
 
